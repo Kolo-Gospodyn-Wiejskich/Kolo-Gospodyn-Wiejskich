@@ -1,3 +1,6 @@
+/* IMPORTS */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
 /* RESETS */
 
 *, *::before, *::after {
@@ -23,12 +26,117 @@ img, picture, svg, video {
   max-width: 100%;
 }
 
-/* WORK IN PROGRESS */
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
-.container {
-  height: 100vh;
+/* STYLING / LAYOUT */
+
+html {
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+h1 {
+  text-align: center;
+  font-size: 3.5rem;
+  padding-block: 1.5rem;
+}
+
+nav {
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+}
+
+nav > a {
+  padding: 1.25rem 1rem;
   display: grid;
   place-items: center;
-  font-size: 8vw;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+}
+
+main {
+  padding: 2rem;
+}
+
+h2 {
+  font-size: 2.5rem;
+}
+
+.aktualny-motyw {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+#motyw {
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 3fr 6fr 2fr;
+}
+
+.leaderboard {
+  text-align: center;
+}
+
+.leaderboard > table {
+  margin-inline: auto;
+  font-size: 1.25rem;
+}
+
+.galeria {
+  text-align: center;
+  padding-inline: 1rem;
+}
+
+.sponsorzy {
+  text-align: center;
+}
+
+.sponsorzy > .sponsor {
+  font-size: 1.5rem;
+  margin-block: 1rem;
+}
+
+.leaderboard > h3,
+.galeria > h3,
+.sponsorzy > h3 {
+  text-align: center;
+  padding: 1rem;
+}
+
+
+footer {
+  text-align: center;
+  padding-block: 1.25rem;
+}
+
+/* THEMES */
+
+body.light-mode > header > h1,
+body.light-mode > footer {
+  background-color: #dcdcdc;
+}
+
+body.light-mode > header > nav {
+  background-color: #eee;
+}
+
+body.light-mode > header > nav > a:hover {
+  background-color: #ccc;
+}
+
+body.light-mode > main > .main-content > .galeria {
+  border-inline: 2px solid #aaa;
 }
