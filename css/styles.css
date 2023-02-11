@@ -87,6 +87,7 @@ h3 {
 .main-content {
   display: grid;
   grid-template-columns: 3fr 7fr;
+  gap: 2rem;
   justify-items: center;
 }
 
