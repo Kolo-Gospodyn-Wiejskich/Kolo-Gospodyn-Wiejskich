@@ -43,6 +43,18 @@ body {
   grid-template-rows: auto 1fr auto;
 }
 
+.top {
+  position: relative;
+}
+
+.top > img {
+  height: 6rem;
+  position: absolute;
+  left: 5rem;
+  top: 50%;
+  transform: translateY(-50%) translateX(-50%);
+}
+
 h1 {
   text-align: center;
   font-size: 3.5rem;
@@ -66,14 +78,16 @@ main {
 }
 
 h2 {
-  font-size: 2.5rem;
+  font-size: 2.75rem;
 }
 
 .aktualny-motyw {
   margin-bottom: 3rem;
   width: fit-content;
   margin-inline: auto;
-  padding: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  text-align: center;
 }
 
 #motyw {
@@ -81,7 +95,7 @@ h2 {
 }
 
 h3 {
-  font-size: 2rem;
+  font-size: 2.25rem;
 }
 
 .main-content {
@@ -91,8 +105,14 @@ h3 {
   justify-items: center;
 }
 
+@media (max-width: 1250px) {
+  .main-content {
+    grid-template-columns: auto;
+  }
+}
+
 .main-content > * {
-  padding: 1rem;
+  padding: 2rem 3rem;
   border-radius: 1rem;
 }
 
@@ -102,16 +122,15 @@ h3 {
 
 .leaderboard > table {
   margin-inline: auto;
-  font-size: 1.25rem;
+  font-size: 1.75rem;
 }
 
-img {
-  border-radius: 0.75rem;
+.galeria img {
+  border-radius: 1rem;
 }
 
 .galeria {
   text-align: center;
-  padding-inline: 1rem;
 }
 
 .leaderboard > h3,
@@ -128,7 +147,7 @@ footer {
 
 /* THEMES */
 
-body.light-mode > header > h1,
+body.light-mode > header > .top,
 body.light-mode > footer {
   background-color: #dcdcdc;
 }
@@ -141,10 +160,8 @@ body.light-mode > header > nav > a:hover {
   background-color: #ccc;
 }
 
-body.light-mode > main > .main-content > * {
-  box-shadow: 0 1rem 1rem rgba(0, 0, 0, .2);
-}
-
+body.light-mode > main > .main-content > *,
 body.light-mode > main > .aktualny-motyw {
-  box-shadow: 0 1rem 1rem -1rem rgba(0, 0, 0, .2);
+  background-color: #eee;
+  border: 1px solid #ccc;
 }
