@@ -55,6 +55,12 @@ body {
   transform: translateY(-50%) translateX(-50%);
 }
 
+@media (max-width: 1250px) {
+  .top > img {
+    display: none;
+  }
+}
+
 h1 {
   text-align: center;
   font-size: 3.5rem;
