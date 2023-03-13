@@ -120,6 +120,7 @@ h3 {
 .main-content > * {
   padding: 2rem 3rem;
   border-radius: 1rem;
+  text-align: center;
 }
 
 .leaderboard {
