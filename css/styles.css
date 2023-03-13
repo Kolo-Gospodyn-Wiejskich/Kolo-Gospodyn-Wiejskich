@@ -34,6 +34,12 @@ a {
 
 /* STYLING / LAYOUT */
 
+@media (max-width: 1250px) {
+  :root {
+    font-size: 80%;
+  }
+}
+
 html {
   font-family: 'Poppins', sans-serif;
 }
