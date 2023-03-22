@@ -1,5 +1,5 @@
 /* IMPORTS */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
 /* RESETS */
 
@@ -163,6 +163,10 @@ h3 {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
+}
+
+.leaderboard > table tr td:last-child {
+  font-weight: 600;
 }
 
 .leaderboard > table tr td:nth-child(2)::after {
