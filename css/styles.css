@@ -159,6 +159,16 @@ h3 {
   font-size: 1.75rem;
 }
 
+.leaderboard > table tr {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.leaderboard > table tr td:nth-child(2)::after {
+  content: ' pkt';
+}
+
 .galeria img {
   border-radius: 1rem;
 }
