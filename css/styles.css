@@ -175,6 +175,7 @@ h3 {
 
 .galeria img {
   border-radius: 1rem;
+  max-height: 30vw;
 }
 
 .galeria {
