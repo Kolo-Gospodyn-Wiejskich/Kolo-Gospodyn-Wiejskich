@@ -14,5 +14,9 @@ module.exports = {
       path: require.resolve('path-browserify'),
     },
   },
-  plugins: [new Dotenv()],
+  plugins: [
+    new Dotenv({
+      systemvars: true,
+    }),
+  ],
 };
