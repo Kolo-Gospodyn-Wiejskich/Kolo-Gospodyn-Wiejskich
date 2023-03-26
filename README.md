@@ -1,3 +1,3 @@
 # Kolo-Gospodyn-Wiejskich
 
-Run `npx webpack`
+Run `npm run build`
