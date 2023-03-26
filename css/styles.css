@@ -180,6 +180,9 @@ h3 {
 
 .galeria {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .leaderboard > h3,
