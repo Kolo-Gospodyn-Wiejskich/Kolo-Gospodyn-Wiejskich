@@ -1,12 +1,14 @@
 import { connect } from '@planetscale/database';
 
-async function updateLeaderboard() {
-  const config = {
-    host: process.env.DATABASE_HOST,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-  };
+const config = {
+  host: process.env.DATABASE_HOST,
+  username: process.env.DATABASE_USERNAME,
+  password: process.env.DATABASE_PASSWORD,
+};
 
+const conn = connect(config);
+
+async function updateLeaderboard() {
   const punktacja = {
     1: 3,
     2: 2,
@@ -16,7 +18,6 @@ async function updateLeaderboard() {
     6: -2,
   };
 
-  const conn = connect(config);
   const query = `
     SELECT Miejsce, Imie
     FROM MiejscaKoncowe, Gospodynie
@@ -52,4 +53,21 @@ async function updateLeaderboard() {
   }
 }
 
+async function updateThemeAndGalleryPreview() {
+  const query = `
+    SELECT NazwaTematu
+    FROM Konkurencje
+    WHERE Data = (SELECT MAX(DATA) FROM Konkurencje)
+  `;
+  const result = await conn.execute(query);
+  const themeName = result.rows[0].NazwaTematu;
+
+  const motyw = document.querySelector('#motyw');
+  motyw.innerHTML = themeName;
+
+  const img = document.querySelector('#galeriaImg');
+  img.src = `assets/${themeName.toLowerCase()}.jpg`;
+}
+
+updateThemeAndGalleryPreview();
 updateLeaderboard();
