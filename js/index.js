@@ -16,6 +16,7 @@ async function updateLeaderboard() {
     4: 0,
     5: -1,
     6: -2,
+    DNF: -2,
   };
 
   const query = `
