@@ -70,5 +70,46 @@ async function updateThemeAndGalleryPreview() {
   img.src = `assets/${themeName.toLowerCase()}.jpg`;
 }
 
-updateThemeAndGalleryPreview();
+function setBreakStatusAndImg() {
+  const status = document.querySelector('.aktualny-motyw');
+  const img = document.querySelector('#galeriaImg');
+  const year = new Date().getFullYear();
+
+  const springBreakStart = new Date(`${year}-04-24`);
+  const summerBreakStart = new Date(`${year}-06-26`);
+  const summerBreakEnd = new Date(`${year}-09-01`);
+  const today = new Date();
+
+  if (today >= springBreakStart && today < summerBreakStart) {
+    const fullDate = new Intl.DateTimeFormat('pl', {
+      day: 'numeric',
+      month: 'long',
+    }).format(summerBreakStart);
+    status.innerHTML = `Przerwa wiosenna do ${fullDate}`;
+    img.src = `assets/przerwaWiosenna.jpg`;
+  }
+  if (today >= summerBreakStart && today < summerBreakEnd) {
+    const fullDate = new Intl.DateTimeFormat('pl', {
+      day: 'numeric',
+      month: 'long',
+    }).format(summerBreakEnd);
+    status.innerHTML = `Przerwa letnia do ${fullDate}`;
+    img.src = `assets/przerwaLetnia.jpg`;
+  }
+}
+
+function isItBreakTime() {
+  const year = new Date().getFullYear();
+  const springBreakStart = new Date(`${year}-04-24`);
+  const summerBreakEnd = new Date(`${year}-09-01`);
+  const today = new Date();
+
+  if (today >= springBreakStart && today < summerBreakEnd) {
+    return true;
+  }
+  return false;
+}
+
+if (isItBreakTime()) setBreakStatusAndImg();
+else updateThemeAndGalleryPreview();
 updateLeaderboard();

@@ -1,3 +1,6 @@
-const year = document.querySelector('#year');
+function setFooterYear() {
+  const year = document.querySelector('#year');
+  year.innerHTML = new Date().getFullYear();
+}
 
-year.innerHTML = new Date().getFullYear();
+setFooterYear();
