@@ -1,11 +1,10 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
-import {
-  getServerSession,
-  type DefaultSession,
-  type NextAuthOptions,
-} from "next-auth";
+import { getServerSession, type NextAuthOptions, type User } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "~/server/db";
+import { loginSchema } from "~/utils/schemas";
+import { compare } from "bcryptjs";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -14,18 +13,21 @@ import { prisma } from "~/server/db";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: DefaultSession["user"] & {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    };
+  interface Session {
+    user: User;
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    id: string;
+    firstName: string;
+    lastName: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    user: User;
+  }
 }
 
 /**
@@ -34,22 +36,55 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  pages: { signIn: "/auth/login" },
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    jwt({ token, user }) {
+      if (user) token.user = user;
+      return token;
+    },
+    session: ({ session, token }) => ({
       ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
+      user: token.user,
     }),
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    // DiscordProvider({
-    //   clientId: env.DISCORD_CLIENT_ID,
-    //   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    //   clientSecret: env.DISCORD_CLIENT_SECRET,
-    // }),
+    CredentialsProvider({
+      credentials: {
+        firstName: {},
+        lastName: {},
+        password: {},
+      },
+      async authorize(credentials) {
+        const parsedCredentials = loginSchema.parse(credentials);
+
+        const user = await prisma.user.findUnique({
+          where: {
+            firstName_lastName: {
+              firstName: parsedCredentials.firstName,
+              lastName: parsedCredentials.lastName,
+            },
+          },
+        });
+
+        if (!user) return null;
+
+        const isPasswordValid = await compare(
+          parsedCredentials.password,
+          user.password,
+        );
+
+        if (!isPasswordValid) return null;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password: _, ...userWithoutPassword } = user;
+
+        return userWithoutPassword;
+      },
+    }),
     /**
      * ...add more providers here.
      *

@@ -5,14 +5,19 @@ import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import Layout, { type LayoutProps } from "~/components/layout";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const { layout: layoutProps } = pageProps as { layout: LayoutProps };
+
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <Layout {...layoutProps}>
+        <Component {...pageProps} />
+      </Layout>
     </SessionProvider>
   );
 };
