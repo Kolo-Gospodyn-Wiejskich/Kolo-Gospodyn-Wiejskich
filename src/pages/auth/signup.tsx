@@ -75,8 +75,8 @@ function SecretCodeForm() {
       </h1>
       <p>
         Aby zostać <span className="text-secondary">gospodynią</span>{" "}
-        <span className="text-primary">koła</span> musisz wpisać kod
-        uprawniający do członkostwa
+        <span className="text-primary">koła</span> musisz podać kod uprawniający
+        do członkostwa
       </p>
       <form
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
