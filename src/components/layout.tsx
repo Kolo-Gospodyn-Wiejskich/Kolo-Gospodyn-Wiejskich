@@ -2,6 +2,7 @@ import Head from "next/head";
 import { type PropsWithChildren } from "react";
 import { Navbar } from "./navbar";
 import { cn } from "~/utils/tailwind-merge";
+import { Toaster } from "react-hot-toast";
 
 export interface LayoutProps extends PropsWithChildren {
   title: string;
@@ -45,6 +46,7 @@ export default function Layout({
           {children}
         </div>
       </main>
+      <Toaster position="bottom-center" />
     </>
   );
 }
