@@ -1,20 +1,23 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  firstName: z.string().min(1, "First name can't be empty"),
-  lastName: z.string().min(1, "Last name can't be empty"),
-  password: z.string().min(1, "Password can't be empty"),
+  firstName: z.string().min(1, "Imię nie może być puste"),
+  lastName: z.string().min(1, "Nazwisko nie może być puste"),
+  password: z.string().min(1, "Hasło nie może być puste"),
+});
+
+export const secretCodeSchema = z.object({
+  secretCode: z.string().min(1, "Kod nie może być pusty"),
 });
 
 export const signUpSchema = z.object({
-  secretCode: z.string().min(1, "Secret code can't be empty"),
   firstName: z
     .string()
-    .min(1, "First name can't be empty")
-    .max(20, "First name must contain at most 20 characters"),
+    .min(1, "Imię nie może być puste")
+    .max(20, "Imię musi zawierać najwyżej 20 znaków"),
   lastName: z
     .string()
-    .min(1, "Last name can't be empty")
-    .max(20, "Last name must contain at most 20 characters"),
-  password: z.string().min(4, "Password must contain at least 4 characters"),
+    .min(1, "Nazwisko nie może być puste")
+    .max(20, "Nazwisko musi zawierać najwyżej 20 znaków"),
+  password: z.string().min(4, "Hasło musi zawierać przynajmniej 4 znaki"),
 });

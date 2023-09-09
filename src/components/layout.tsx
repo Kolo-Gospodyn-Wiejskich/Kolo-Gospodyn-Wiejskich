@@ -6,7 +6,7 @@ import { cn } from "~/utils/tailwind-merge";
 export interface LayoutProps extends PropsWithChildren {
   title: string;
   description: string;
-  centeredVertically: boolean;
+  centeredVertically?: boolean;
 }
 
 export default function Layout({

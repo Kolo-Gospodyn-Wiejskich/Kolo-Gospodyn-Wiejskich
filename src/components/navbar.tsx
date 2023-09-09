@@ -7,7 +7,7 @@ export function Navbar() {
   const { status: sessionStatus } = useSession();
 
   return (
-    <nav className="navbar">
+    <nav className="navbar flex-col gap-2 md:flex-row">
       <div className="flex-1">
         <Link href={"/"} className="btn btn-ghost text-2xl normal-case">
           <span className="text-primary">Koło</span>{" "}
@@ -15,7 +15,7 @@ export function Navbar() {
           <span className="text-accent">Wiejskich</span>
         </Link>
       </div>
-      <div className="flex gap-4">
+      <div className="flex flex-col gap-2 md:flex-row md:gap-4">
         {sessionStatus === "authenticated" && (
           <button className="btn btn-ghost" onClick={() => void signOut()}>
             <ExitIcon />

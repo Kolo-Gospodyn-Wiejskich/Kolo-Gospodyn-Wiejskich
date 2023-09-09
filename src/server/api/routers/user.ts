@@ -1,19 +1,25 @@
 import { TRPCError } from "@trpc/server";
 import { hash } from "bcryptjs";
+import { z } from "zod";
 import { env } from "~/env.mjs";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { signUpSchema } from "~/utils/schemas";
 
 export const userRouter = createTRPCRouter({
-  signUp: publicProcedure
-    .input(signUpSchema)
-    .mutation(async ({ input, ctx }) => {
+  checkSecretCode: publicProcedure
+    .input(z.object({ secretCode: z.string().min(1) }))
+    .mutation(({ input }) => {
       if (input.secretCode !== env.SECRET_CODE)
         throw new TRPCError({
-          message: "Wrong code",
+          message: "Niepoprawny kod",
           code: "FORBIDDEN",
         });
 
+      return { status: "ok" };
+    }),
+  signUp: publicProcedure
+    .input(signUpSchema)
+    .mutation(async ({ input, ctx }) => {
       const existingUser = await ctx.prisma.user.findUnique({
         where: {
           firstName_lastName: {
@@ -25,7 +31,7 @@ export const userRouter = createTRPCRouter({
 
       if (existingUser)
         throw new TRPCError({
-          message: "User already exists",
+          message: "Użytkownik już istnieje",
           code: "CONFLICT",
         });
 
