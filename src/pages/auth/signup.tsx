@@ -18,7 +18,7 @@ export function getServerSideProps() {
     props: {
       layout: {
         title: "Rejestracja",
-        description: "Zarejestruj sie do Koła Gospodyń Wiejskich",
+        description: "Zarejestruj się do Koła Gospodyń Wiejskich",
       } satisfies LayoutProps,
     },
   };
@@ -134,12 +134,11 @@ function SignUpForm() {
         redirect: false,
       });
 
-      if (!result) return;
-      if (result.error) {
+      if (result?.error) {
         toast.error("Server error, please try again");
         setCustomIsLoading(false);
       }
-      if (result.ok) await router.push("/");
+      if (result?.ok) await router.push("/");
     },
     onError: (error) => {
       if (error.data?.code === "CONFLICT") {
