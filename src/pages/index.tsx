@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import { type LayoutProps } from "~/components/layout";
 
 export function getServerSideProps() {
@@ -20,9 +21,22 @@ export default function Home() {
         <span className="text-secondary">Gospodyń</span>{" "}
         <span className="text-accent">Wiejskich</span>
       </h1>
-      <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col items-center gap-6">
         <p className="text-2xl">WORK IN PROGRESS</p>
+        <Welcome />
       </div>
     </div>
+  );
+}
+
+function Welcome() {
+  const { data } = useSession();
+
+  if (!data) return null;
+
+  return (
+    <p className="text-3xl font-semibold">
+      Siema {data.user.firstName} {data.user.lastName}
+    </p>
   );
 }
