@@ -20,8 +20,8 @@ model Competiton {
     startsAt DateTime
     endsAt   DateTime
 
-    finalPlacements FinalPlacement[]
-    entries         Entry[]
+    rankingPlacements RankingPlacement[]
+    entries           Entry[]
 }
 
 model Entry {
@@ -39,7 +39,7 @@ model Entry {
     @@unique([authorId, competitionId])
 }
 
-model FinalPlacement {
+model RankingPlacement {
     id            String @id @default(cuid())
     place         Int
     userId        String
@@ -67,9 +67,9 @@ model User {
     lastName  String
     password  String
 
-    finalPlacements FinalPlacement[]
-    ratings         Rating[]
-    entries         Entry[]
+    rankingPlacements RankingPlacement[]
+    ratings           Rating[]
+    entries           Entry[]
 
     // Necessary for Next auth
     accounts Account[]
