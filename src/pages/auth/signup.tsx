@@ -176,7 +176,7 @@ function SignUpForm() {
       errors.firstName?.type === "server" ||
       errors.lastName?.type === "server"
     ) {
-      clearErrors();
+      clearErrors(["firstName", "lastName"]);
     }
   });
 
