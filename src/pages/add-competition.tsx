@@ -1,14 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { atom, useAtomValue } from "jotai";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { type DateRange } from "react-day-picker";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { type z } from "zod";
 import { type LayoutProps } from "~/components/layout";
-import { WeekPicker } from "~/components/ui/week-picker";
+import { DateRangePicker } from "~/components/ui/date-range-picker";
 import { api } from "~/utils/api";
 import { competitionSchema } from "~/utils/schemas";
 import { cn } from "~/utils/tailwind-merge";
+// import  from '@radix-ui/react-form';
 
 export function getServerSideProps() {
   return {
@@ -20,6 +23,8 @@ export function getServerSideProps() {
     },
   };
 }
+
+export const dateRangeAtom = atom<DateRange | undefined>(undefined);
 
 type FormSchema = z.infer<typeof competitionSchema>;
 
@@ -49,6 +54,7 @@ export default function AddCompetition() {
     setError,
     watch,
     clearErrors,
+    setValue,
   } = useForm<FormSchema>({
     resolver: zodResolver(competitionSchema),
   });
@@ -64,25 +70,29 @@ export default function AddCompetition() {
     }
   });
 
+  const dateRangeValue = useAtomValue(dateRangeAtom);
+
+  useEffect(() => {
+    if (!dateRangeValue) return;
+    if (dateRangeValue.from) setValue("startsAt", dateRangeValue.from);
+    if (dateRangeValue.to) setValue("endsAt", dateRangeValue.to);
+  }, [dateRangeValue, setValue]);
+
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     setCustomIsLoading(true);
-    addCompetition(data);
+
+    const correctEndsAt = new Date(data.endsAt.getTime());
+    correctEndsAt.setSeconds(correctEndsAt.getSeconds() - 1);
+    correctEndsAt.setDate(correctEndsAt.getDate() + 1);
+
+    const dataWithCorrectEndsAt = {
+      name: data.name,
+      startsAt: data.startsAt,
+      endsAt: correctEndsAt,
+    };
+
+    addCompetition(dataWithCorrectEndsAt);
   };
-
-  const startsAtField = watch("startsAt");
-  const endsAtField = watch("endsAt");
-  console.log({ startsAtField, endsAtField });
-  const startsAtDate = startsAtField
-    ? startsAtField.toISOString().split("T")[0]
-    : undefined;
-  const endsAtDate = endsAtField
-    ? endsAtField.toISOString().split("T")[0]
-    : undefined;
-
-  console.log({ startsAtDate, endsAtDate });
-
-  const stringToDate = (string: string) =>
-    string ? new Date(string) : undefined;
 
   return (
     <div className="w-[80vw] space-y-4 sm:w-96">
@@ -103,6 +113,7 @@ export default function AddCompetition() {
             Nazwa
           </label>
           <input
+            placeholder="Ciasteczka..."
             type="text"
             id="name"
             {...register("name")}
@@ -121,21 +132,23 @@ export default function AddCompetition() {
           <label htmlFor="dateRange" className="label label-text">
             Przedział czasu
           </label>
-          <WeekPicker />
-          {/* <input
-            type="week"
-            id="week"
-            {...register("startsAt", { setValueAs: stringToDate })}
-            disabled={customIsLoading}
-            className={cn("input input-bordered", {
-              "input-error text-error": errors.startsAt,
-            })}
-          /> */}
+          <DateRangePicker
+            isError={!!errors.startsAt || !!errors.endsAt}
+            isLoading={customIsLoading}
+          />
           {errors.startsAt && (
             <div className="label label-text-alt text-error">
               {errors.startsAt.message}
             </div>
           )}
+          {!errors.startsAt && errors.endsAt && (
+            <div className="label label-text-alt text-error">
+              {errors.endsAt.message}
+            </div>
+          )}
+          <div className="label label-text-alt">
+            Ustaw tydzień w przypadku braku sytuacji nadzwyczajnej
+          </div>
         </div>
         <button disabled={customIsLoading} className="btn btn-primary mt-2">
           Dodaj

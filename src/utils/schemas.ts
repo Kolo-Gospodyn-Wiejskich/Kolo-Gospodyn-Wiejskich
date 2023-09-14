@@ -27,6 +27,8 @@ export const competitionSchema = z.object({
     .string()
     .min(1, "Nazwa nie może być pusta")
     .max(30, "Nazwa musi zawierać najwyżej 30 znaków"),
-  startsAt: z.date(),
-  endsAt: z.date(),
+  startsAt: z.date({
+    required_error: "Początek przedziału czasu jest wymagany",
+  }),
+  endsAt: z.date({ required_error: "Koniec przedziału czasu jest wymagany" }),
 });

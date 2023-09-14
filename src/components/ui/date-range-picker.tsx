@@ -12,22 +12,31 @@ import {
 } from "./dependencies/popover";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { cn } from "~/utils/tailwind-merge";
+import { useAtom } from "jotai";
+import { dateRangeAtom } from "~/pages/add-competition";
 
-export function WeekPicker({
+export function DateRangePicker({
   className,
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>();
+  isError,
+  isLoading,
+}: React.HTMLAttributes<HTMLDivElement> & {
+  isError: boolean;
+  isLoading: boolean;
+}) {
+  const [date, setDate] = useAtom<DateRange | undefined>(dateRangeAtom);
 
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            id="date"
+            id="dateRange"
+            disabled={isLoading}
             variant={"outline"}
             className={cn(
               "input input-bordered justify-start py-6 text-left font-normal",
               !date && "text-muted-foreground",
+              { "input-error text-error": isError },
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -45,15 +54,21 @@ export function WeekPicker({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent
+          className="w-auto p-0"
+          align="start"
+          data-theme="customLight"
+        >
           <Calendar
             initialFocus
             mode="range"
-            max={13}
+            max={14}
             defaultMonth={date?.from}
             selected={date}
             onSelect={setDate}
             numberOfMonths={2}
+            disabled={(date) => date <= new Date()}
+            className="bg-base-100"
           />
         </PopoverContent>
       </Popover>

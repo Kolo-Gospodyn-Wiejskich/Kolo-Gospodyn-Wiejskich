@@ -5,6 +5,7 @@ import { DayPicker } from "react-day-picker";
 import { cn } from "~/utils/tailwind-merge";
 import { buttonVariants } from "./button";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { pl } from "date-fns/locale";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -16,6 +17,7 @@ function Calendar({
 }: CalendarProps) {
   return (
     <DayPicker
+      locale={pl}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
@@ -34,18 +36,18 @@ function Calendar({
         head_row: "flex",
         head_cell: "rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-base-200 first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
         ),
         day_selected:
-          "bg-primary text-primary-content hover:bg-primary hover:text-primary-content focus:bg-primary focus:text-primary-content",
-        day_today: "bg-accent text-accent-content",
+          "bg-base-300 text-base-content hover:bg-base-300 hover:text-base-content focus:bg-base-300 focus:text-base-content",
+        day_today: "bg-base-200",
         day_outside: "opacity-50",
         day_disabled: "opacity-50",
         day_range_middle:
-          "aria-selected:bg-accent aria-selected:text-accent-content",
+          "aria-selected:bg-base-200 aria-selected:text-base-content",
         day_hidden: "invisible",
         ...classNames,
       }}
