@@ -118,11 +118,11 @@ export default function AddCompetition() {
           )}
         </div>
         <div className="flex flex-col">
-          <label htmlFor="week" className="label label-text">
-            Tydzień
+          <label htmlFor="dateRange" className="label label-text">
+            Przedział czasu
           </label>
           <WeekPicker />
-          <input
+          {/* <input
             type="week"
             id="week"
             {...register("startsAt", { setValueAs: stringToDate })}
@@ -130,7 +130,7 @@ export default function AddCompetition() {
             className={cn("input input-bordered", {
               "input-error text-error": errors.startsAt,
             })}
-          />
+          /> */}
           {errors.startsAt && (
             <div className="label label-text-alt text-error">
               {errors.startsAt.message}

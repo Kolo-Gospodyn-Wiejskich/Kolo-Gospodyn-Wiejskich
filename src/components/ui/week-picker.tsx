@@ -1,5 +1,6 @@
 import * as React from "react";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
 import { type DateRange } from "react-day-picker";
 
 import { Button } from "./dependencies/button";
@@ -33,14 +34,14 @@ export function WeekPicker({
             {date?.from ? (
               date.to ? (
                 <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(date.from, "dd LLL y", { locale: pl })} -{" "}
+                  {format(date.to, "dd LLL y", { locale: pl })}
                 </>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, "dd LLL y", { locale: pl })
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Wybierz przedział czasu</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -48,13 +49,11 @@ export function WeekPicker({
           <Calendar
             initialFocus
             mode="range"
-            min={7}
-            max={7}
+            max={13}
             defaultMonth={date?.from}
             selected={date}
             onSelect={setDate}
             numberOfMonths={2}
-            className="bg-white"
           />
         </PopoverContent>
       </Popover>
