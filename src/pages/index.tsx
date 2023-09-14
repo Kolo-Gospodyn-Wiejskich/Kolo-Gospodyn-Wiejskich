@@ -3,7 +3,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { type LayoutProps } from "~/components/layout";
 import { api } from "~/utils/api";
-import { dateToRelative } from "~/utils/relativeDate";
 
 export function getServerSideProps() {
   return {
@@ -19,16 +18,14 @@ export function getServerSideProps() {
 
 export default function Home() {
   return (
-    <div className="container flex h-full flex-col items-center justify-center gap-6">
+    <div className="container flex h-full flex-col items-center justify-center gap-16">
       <h1 className="text-center text-5xl font-extrabold sm:text-[5rem]">
         <span className="text-primary">Koło</span>{" "}
         <span className="text-secondary">Gospodyń</span>{" "}
         <span className="text-accent">Wiejskich</span>
       </h1>
-      <div className="flex flex-col items-center gap-6">
-        <Welcome />
-        <CompetitionList />
-      </div>
+      <Welcome />
+      <CompetitionList />
     </div>
   );
 }
@@ -39,12 +36,12 @@ function Welcome() {
   if (!data) return null;
 
   return (
-    <p className="text-3xl">
+    <div className="text-3xl">
       Witaj,{" "}
       <span className="font-semibold">
         {data.user.firstName} {data.user.lastName}
       </span>
-    </p>
+    </div>
   );
 }
 
@@ -75,7 +72,7 @@ function CompetitionList() {
     );
 
   return (
-    <div>
+    <div className="flex w-[80vw] flex-wrap justify-center gap-4 sm:w-[44rem]">
       {competitions.map((competition) => (
         <Competition key={competition.id} {...competition} />
       ))}
@@ -83,12 +80,17 @@ function CompetitionList() {
   );
 }
 
-function Competition({ id, name, startsAt, endsAt }: Competiton) {
+type CompetitionProps = Pick<Competiton, "id" | "name">;
+
+function Competition({ id, name }: CompetitionProps) {
   return (
-    <Link href={`/competition/${id}`}>
-      <div>{name}</div>
-      <div>{dateToRelative(startsAt)}</div>
-      <div>{dateToRelative(endsAt)}</div>
+    <Link
+      href={`/competition/${id}`}
+      className="flex h-40 w-40 items-center justify-center rounded-xl bg-base-200 p-4"
+    >
+      <div className="flex h-full w-full items-center justify-center rounded-xl bg-base-300 text-xl font-semibold">
+        <div>{name}</div>
+      </div>
     </Link>
   );
 }

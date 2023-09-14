@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -9,10 +10,22 @@ import { competitionSchema } from "~/utils/schemas";
 export const competitionRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.competiton.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
       take: 100,
     });
   }),
-
+  getDetailsById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      return ctx.prisma.competiton.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
   addNew: protectedProcedure
     .input(competitionSchema)
     .mutation(async ({ input, ctx }) => {
