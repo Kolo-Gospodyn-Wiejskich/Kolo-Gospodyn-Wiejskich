@@ -18,7 +18,7 @@ export function getServerSideProps() {
 
 export default function Home() {
   return (
-    <div className="container flex h-full flex-col items-center justify-center gap-16">
+    <div className="container flex h-full flex-col items-center justify-center gap-16 py-8">
       <h1 className="text-center text-5xl font-extrabold sm:text-[5rem]">
         <span className="text-primary">Koło</span>{" "}
         <span className="text-secondary">Gospodyń</span>{" "}

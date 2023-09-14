@@ -5,6 +5,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { type z } from "zod";
 import { type LayoutProps } from "~/components/layout";
+import { WeekPicker } from "~/components/ui/week-picker";
 import { api } from "~/utils/api";
 import { competitionSchema } from "~/utils/schemas";
 import { cn } from "~/utils/tailwind-merge";
@@ -117,13 +118,13 @@ export default function AddCompetition() {
           )}
         </div>
         <div className="flex flex-col">
-          <label htmlFor="startsAt" className="label label-text">
-            Początek
+          <label htmlFor="week" className="label label-text">
+            Tydzień
           </label>
+          <WeekPicker />
           <input
-            max={endsAtDate}
-            type="date"
-            id="startsAt"
+            type="week"
+            id="week"
             {...register("startsAt", { setValueAs: stringToDate })}
             disabled={customIsLoading}
             className={cn("input input-bordered", {
@@ -133,26 +134,6 @@ export default function AddCompetition() {
           {errors.startsAt && (
             <div className="label label-text-alt text-error">
               {errors.startsAt.message}
-            </div>
-          )}
-        </div>
-        <div className="flex flex-col">
-          <label htmlFor="endsAt" className="label label-text">
-            Koniec
-          </label>
-          <input
-            min={startsAtDate}
-            type="date"
-            id="endsAt"
-            {...register("endsAt", { setValueAs: stringToDate })}
-            disabled={customIsLoading}
-            className={cn("input input-bordered", {
-              "input-error text-error": errors.endsAt,
-            })}
-          />
-          {errors.endsAt && (
-            <div className="label label-text-alt text-error">
-              {errors.endsAt.message}
             </div>
           )}
         </div>
