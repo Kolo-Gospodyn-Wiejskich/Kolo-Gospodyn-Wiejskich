@@ -21,3 +21,14 @@ export const signUpSchema = z.object({
     .max(20, "Nazwisko musi zawierać najwyżej 20 znaków"),
   password: z.string().min(4, "Hasło musi zawierać przynajmniej 4 znaki"),
 });
+
+export const competitionSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Nazwa nie może być pusta")
+    .max(30, "Nazwa musi zawierać najwyżej 30 znaków"),
+  startsAt: z.date({
+    required_error: "Początek przedziału czasu jest wymagany",
+  }),
+  endsAt: z.date({ required_error: "Koniec przedziału czasu jest wymagany" }),
+});

@@ -1,7 +1,11 @@
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-
-import { ExitIcon, EnterIcon, PersonIcon } from "@radix-ui/react-icons";
+import {
+  ExitIcon,
+  EnterIcon,
+  PersonIcon,
+  PlusIcon,
+} from "@radix-ui/react-icons";
 
 export function Navbar() {
   const { status: sessionStatus } = useSession();
@@ -17,10 +21,20 @@ export function Navbar() {
       </div>
       <div className="flex flex-col gap-2 md:flex-row md:gap-4">
         {sessionStatus === "authenticated" && (
-          <button className="btn btn-ghost" onClick={() => void signOut()}>
-            <ExitIcon />
-            Wyloguj
-          </button>
+          <>
+            <Link
+              href={"/add-competition"}
+              role="button"
+              className="btn btn-ghost"
+            >
+              <PlusIcon />
+              Dodaj konkurencję
+            </Link>
+            <button className="btn btn-ghost" onClick={() => void signOut()}>
+              <ExitIcon />
+              Wyloguj
+            </button>
+          </>
         )}
         {sessionStatus === "unauthenticated" && (
           <>

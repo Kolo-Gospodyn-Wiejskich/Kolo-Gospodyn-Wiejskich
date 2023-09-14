@@ -20,8 +20,7 @@ model Competiton {
     startsAt DateTime
     endsAt   DateTime
 
-    rankingPlacements RankingPlacement[]
-    entries           Entry[]
+    entries Entry[]
 }
 
 model Entry {
@@ -37,16 +36,6 @@ model Entry {
     competiton Competiton @relation(fields: [competitionId], references: [id])
 
     @@unique([authorId, competitionId])
-}
-
-model RankingPlacement {
-    id            String @id @default(cuid())
-    place         Int
-    userId        String
-    competitionId String
-
-    user        User       @relation(fields: [userId], references: [id])
-    competition Competiton @relation(fields: [competitionId], references: [id])
 }
 
 model Rating {
@@ -67,9 +56,8 @@ model User {
     lastName  String
     password  String
 
-    rankingPlacements RankingPlacement[]
-    ratings           Rating[]
-    entries           Entry[]
+    ratings Rating[]
+    entries Entry[]
 
     // Necessary for Next auth
     accounts Account[]
