@@ -36,7 +36,10 @@ export default function Layout({
           media="(prefers-color-scheme: dark)"
         />
       </Head>
-      <main data-theme={theme} className="flex min-h-screen flex-col gap-6 p-6">
+      <main
+        data-theme={theme}
+        className="flex min-h-[100dvh] flex-col gap-6 p-6"
+      >
         <Navbar />
         <div
           className={cn("flex flex-1 justify-center px-6", {
