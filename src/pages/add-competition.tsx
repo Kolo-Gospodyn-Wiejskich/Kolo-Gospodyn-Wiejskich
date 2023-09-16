@@ -11,6 +11,7 @@ import { DateRangePicker } from "~/components/ui/date-range-picker";
 import { api } from "~/utils/api";
 import { competitionSchema } from "~/utils/schemas";
 import { cn } from "~/utils/tailwind-merge";
+import { useProtectedPage } from "~/utils/useProtectedPage";
 // import  from '@radix-ui/react-form';
 
 export function getServerSideProps() {
@@ -37,7 +38,10 @@ export default function AddCompetition() {
       await router.push(`/competition/${id}`);
     },
     onError: (error) => {
-      if (error.data?.code === "CONFLICT") {
+      if (
+        error.data?.code === "CONFLICT" ||
+        error.data?.code === "BAD_REQUEST"
+      ) {
         setError("startsAt", { type: "server", message: error.message });
         setError("endsAt", { type: "server", message: error.message });
       } else {
@@ -55,6 +59,7 @@ export default function AddCompetition() {
     watch,
     clearErrors,
     setValue,
+    resetField,
   } = useForm<FormSchema>({
     resolver: zodResolver(competitionSchema),
   });
@@ -73,10 +78,18 @@ export default function AddCompetition() {
   const dateRangeValue = useAtomValue(dateRangeAtom);
 
   useEffect(() => {
-    if (!dateRangeValue) return;
+    console.log({ dateRangeValue });
+
+    if (!dateRangeValue) {
+      resetField("startsAt");
+      resetField("endsAt");
+      return;
+    }
     if (dateRangeValue.from) setValue("startsAt", dateRangeValue.from);
+    else resetField("startsAt");
     if (dateRangeValue.to) setValue("endsAt", dateRangeValue.to);
-  }, [dateRangeValue, setValue]);
+    else resetField("endsAt");
+  }, [dateRangeValue, setValue, resetField]);
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     setCustomIsLoading(true);
@@ -91,8 +104,13 @@ export default function AddCompetition() {
       endsAt: correctEndsAt,
     };
 
+    console.log(dataWithCorrectEndsAt);
+
     addCompetition(dataWithCorrectEndsAt);
   };
+
+  const { isAuthed } = useProtectedPage();
+  if (!isAuthed) return null;
 
   return (
     <div className="w-[80vw] space-y-4 sm:w-96">
