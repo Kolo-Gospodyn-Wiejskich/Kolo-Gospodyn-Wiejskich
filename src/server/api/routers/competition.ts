@@ -29,7 +29,19 @@ export const competitionRouter = createTRPCRouter({
   addNew: protectedProcedure
     .input(competitionSchema)
     .mutation(async ({ input, ctx }) => {
-      const conflictingCompetition = await ctx.prisma.competiton.findFirst({
+      if (input.startsAt <= new Date())
+        throw new TRPCError({
+          message: "Konkurencja nie może zaczynać się w przeszłości",
+          code: "BAD_REQUEST",
+        });
+
+      if (input.startsAt >= input.endsAt)
+        throw new TRPCError({
+          message: "Konkurencja musi zaczynać się przed jej końcem",
+          code: "BAD_REQUEST",
+        });
+
+      const conflicting = await ctx.prisma.competiton.findFirst({
         where: {
           OR: [
             {
@@ -56,7 +68,7 @@ export const competitionRouter = createTRPCRouter({
         },
       });
 
-      if (conflictingCompetition)
+      if (conflicting)
         throw new TRPCError({
           message: "Istnieje już konkurencja w tym przedziale czasowym",
           code: "CONFLICT",

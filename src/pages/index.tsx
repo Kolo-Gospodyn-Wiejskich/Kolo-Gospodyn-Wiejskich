@@ -36,7 +36,7 @@ function Welcome() {
   if (!data) return null;
 
   return (
-    <div className="text-3xl">
+    <div className="text-center text-3xl">
       Witaj,{" "}
       <span className="font-semibold">
         {data.user.firstName} {data.user.lastName}
@@ -72,7 +72,7 @@ function CompetitionList() {
     );
 
   return (
-    <div className="flex w-[80vw] flex-wrap justify-center gap-4 sm:w-[44rem]">
+    <div className="flex w-[80vw] flex-wrap justify-center gap-4 sm:w-[60vw]">
       {competitions.map((competition) => (
         <Competition key={competition.id} {...competition} />
       ))}
@@ -86,10 +86,12 @@ function Competition({ id, name }: CompetitionProps) {
   return (
     <Link
       href={`/competition/${id}`}
-      className="flex h-40 w-40 items-center justify-center rounded-xl bg-base-200 p-4"
+      className="flex h-56 w-56 items-center justify-center rounded-xl bg-base-200 p-4"
     >
       <div className="flex h-full w-full items-center justify-center rounded-xl bg-base-300 text-xl font-semibold">
-        <div>{name}</div>
+        <div className="overflow-hidden text-ellipsis p-4 text-center">
+          {name}
+        </div>
       </div>
     </Link>
   );

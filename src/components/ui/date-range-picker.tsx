@@ -25,6 +25,8 @@ export function DateRangePicker({
 }) {
   const [date, setDate] = useAtom<DateRange | undefined>(dateRangeAtom);
 
+  const numberOfMonths = useNumberOfMonths();
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -57,6 +59,7 @@ export function DateRangePicker({
         <PopoverContent
           className="w-auto p-0"
           align="start"
+          side="top"
           data-theme="customLight"
         >
           <Calendar
@@ -66,7 +69,7 @@ export function DateRangePicker({
             defaultMonth={date?.from}
             selected={date}
             onSelect={setDate}
-            numberOfMonths={2}
+            numberOfMonths={numberOfMonths}
             disabled={(date) => date <= new Date()}
             className="bg-base-100"
           />
@@ -75,3 +78,27 @@ export function DateRangePicker({
     </div>
   );
 }
+
+const useNumberOfMonths = () => {
+  const [numberOfMonths, setNumberOfMonths] = React.useState(1);
+
+  const handleScreenChange = (e: MediaQueryListEvent) =>
+    setNumberOfMonths(e.matches ? 2 : 1);
+
+  React.useLayoutEffect(() => {
+    if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches)
+      setNumberOfMonths(2);
+
+    window
+      .matchMedia("(min-width: 1024px)")
+      .addEventListener("change", handleScreenChange);
+
+    return () => {
+      window
+        .matchMedia("(min-width: 1024px)")
+        .removeEventListener("change", handleScreenChange);
+    };
+  }, []);
+
+  return numberOfMonths;
+};
