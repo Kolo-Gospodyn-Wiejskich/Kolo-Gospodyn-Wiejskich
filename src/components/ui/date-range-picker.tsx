@@ -1,7 +1,11 @@
 import * as React from "react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
-import { type DateRange } from "react-day-picker";
+import {
+  type DateAfter,
+  type DateBefore,
+  type DateRange,
+} from "react-day-picker";
 
 import { Button } from "./dependencies/button";
 import { Calendar } from "./dependencies/calendar";
@@ -15,6 +19,7 @@ import { cn } from "~/utils/tailwind-merge";
 import { useAtom } from "jotai";
 import { dateRangeAtom } from "~/pages/add-competition";
 import { api } from "~/utils/api";
+import { type Matcher } from "react-day-picker";
 
 export function DateRangePicker({
   className,
@@ -28,24 +33,31 @@ export function DateRangePicker({
 
   const numberOfMonths = useNumberOfMonths();
 
-  const { data: disabledDateRanges } =
-    api.competitions.getAllDisabledDateRanges.useQuery();
+  const { data: takenDateRanges } =
+    api.competitions.getAllTakenDateRanges.useQuery();
 
-  const isDateDisabled = (dateToCheck: Date) => {
-    if (dateToCheck <= new Date()) return true;
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
-    if (!disabledDateRanges) return false;
+  const getUnreachableRanges = (): (DateBefore | DateAfter)[] => {
+    const selectedDate = date?.from;
 
-    for (const disabledDateRange of disabledDateRanges) {
-      if (
-        dateToCheck >= disabledDateRange.startsAt &&
-        dateToCheck <= disabledDateRange.endsAt
-      ) {
-        return true;
-      }
-    }
-    return false;
+    if (!selectedDate || !takenDateRanges) return [];
+
+    return takenDateRanges.map((rangeToExtend) => {
+      if (rangeToExtend.from >= selectedDate)
+        return { after: rangeToExtend.from };
+      return { before: rangeToExtend.to };
+    });
   };
+
+  const disabledDateMatchers = takenDateRanges
+    ? ([
+        ...takenDateRanges,
+        ...getUnreachableRanges(),
+        { before: tomorrow },
+      ] satisfies Matcher[])
+    : ([...getUnreachableRanges(), { before: tomorrow }] satisfies Matcher[]);
 
   const handleSelectDate = (newDateRange: DateRange | undefined) => {
     // adjust select behaviour
@@ -72,7 +84,7 @@ export function DateRangePicker({
 
     if (
       !newDateRange ||
-      !disabledDateRanges ||
+      !takenDateRanges ||
       !newDateRange.from ||
       !newDateRange.to
     ) {
@@ -81,12 +93,12 @@ export function DateRangePicker({
     }
 
     // disable taken dates
-    for (const disabledDateRange of disabledDateRanges) {
+    for (const takenDateRange of takenDateRanges) {
       if (
-        (disabledDateRange.startsAt >= newDateRange.from &&
-          disabledDateRange.startsAt <= newDateRange.to) ||
-        (disabledDateRange.endsAt >= newDateRange.from &&
-          disabledDateRange.endsAt <= newDateRange.to)
+        (takenDateRange.from >= newDateRange.from &&
+          takenDateRange.from <= newDateRange.to) ||
+        (takenDateRange.to >= newDateRange.from &&
+          takenDateRange.to <= newDateRange.to)
       ) {
         return;
       }
@@ -139,7 +151,7 @@ export function DateRangePicker({
             selected={date}
             onSelect={handleSelectDate}
             numberOfMonths={numberOfMonths}
-            disabled={isDateDisabled}
+            disabled={disabledDateMatchers}
             className="bg-base-100"
           />
         </PopoverContent>

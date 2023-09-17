@@ -17,9 +17,9 @@ export const competitionRouter = createTRPCRouter({
       take: 100,
     });
   }),
-  getAllDisabledDateRanges: publicProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.competiton.findMany({
-      // only get those not in the past, since those are already disabled
+  getAllTakenDateRanges: publicProcedure.query(async ({ ctx }) => {
+    const takenDateRanges = await ctx.prisma.competiton.findMany({
+      // only get those not in the past, since those are already taken
       where: {
         endsAt: {
           gt: new Date(),
@@ -35,6 +35,12 @@ export const competitionRouter = createTRPCRouter({
       },
       take: 100,
     });
+
+    // change object shape to fit react-day-picker
+    return takenDateRanges.map(({ startsAt, endsAt }) => ({
+      from: startsAt,
+      to: endsAt,
+    }));
   }),
   getDetailsById: publicProcedure
     .input(z.object({ id: z.string() }))
