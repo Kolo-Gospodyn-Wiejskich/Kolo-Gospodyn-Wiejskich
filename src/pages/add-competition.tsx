@@ -54,13 +54,14 @@ export default function AddCompetition() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitted },
     setError,
     watch,
     clearErrors,
     setValue,
     getValues,
     reset,
+    trigger,
   } = useForm<FormSchema>({
     resolver: zodResolver(competitionSchema),
   });
@@ -80,26 +81,43 @@ export default function AddCompetition() {
 
   useEffect(() => {
     if (!dateRangeValue) {
-      reset({
-        name: getValues("name"),
-      });
+      reset(
+        {
+          name: getValues("name"),
+        },
+        { keepIsSubmitted: true },
+      );
+      if (isSubmitted) {
+        void trigger("startsAt");
+        void trigger("endsAt");
+      }
       return;
     }
     if (dateRangeValue.from) setValue("startsAt", dateRangeValue.from);
     else {
-      reset({
-        name: getValues("name"),
-        endsAt: getValues("endsAt"),
-      });
+      reset(
+        {
+          name: getValues("name"),
+          endsAt: getValues("endsAt"),
+        },
+        { keepIsSubmitted: true },
+      );
     }
     if (dateRangeValue.to) setValue("endsAt", dateRangeValue.to);
     else {
-      reset({
-        name: getValues("name"),
-        startsAt: getValues("startsAt"),
-      });
+      reset(
+        {
+          name: getValues("name"),
+          startsAt: getValues("startsAt"),
+        },
+        { keepIsSubmitted: true },
+      );
     }
-  }, [dateRangeValue, setValue, reset, getValues]);
+    if (isSubmitted) {
+      void trigger("startsAt");
+      void trigger("endsAt");
+    }
+  }, [dateRangeValue, setValue, reset, getValues, isSubmitted, trigger]);
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     setCustomIsLoading(true);
