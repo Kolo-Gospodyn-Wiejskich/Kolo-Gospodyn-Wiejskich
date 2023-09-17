@@ -24,7 +24,7 @@ export function DateRangePicker({
   isError: boolean;
   isLoading: boolean;
 }) {
-  const [date, setDate] = useAtom<DateRange | undefined>(dateRangeAtom);
+  const [date, setDate] = useAtom(dateRangeAtom);
 
   const numberOfMonths = useNumberOfMonths();
 
@@ -45,6 +45,31 @@ export function DateRangePicker({
       }
     }
     return false;
+  };
+
+  const handleSelectDate = (newDateRange: DateRange | undefined) => {
+    if (
+      !newDateRange ||
+      !disabledDateRanges ||
+      !newDateRange.from ||
+      !newDateRange.to
+    ) {
+      setDate(newDateRange);
+      return;
+    }
+
+    for (const disabledDateRange of disabledDateRanges) {
+      if (
+        (disabledDateRange.startsAt >= newDateRange.from &&
+          disabledDateRange.startsAt <= newDateRange.to) ||
+        (disabledDateRange.endsAt >= newDateRange.from &&
+          disabledDateRange.endsAt <= newDateRange.to)
+      ) {
+        return;
+      }
+    }
+
+    setDate(newDateRange);
   };
 
   return (
@@ -88,7 +113,7 @@ export function DateRangePicker({
             max={14}
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={handleSelectDate}
             numberOfMonths={numberOfMonths}
             disabled={isDateDisabled}
             className="bg-base-100"
