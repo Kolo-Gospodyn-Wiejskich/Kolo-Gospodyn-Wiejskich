@@ -48,7 +48,13 @@ export function DateRangePicker({
   };
 
   const handleSelectDate = (newDateRange: DateRange | undefined) => {
+    // adjust select behaviour
     if (date?.from && date?.to) {
+      if (newDateRange?.from === date.to) {
+        setDate(undefined);
+        return;
+      }
+
       if (newDateRange?.from && newDateRange.from !== date?.from) {
         setDate({
           from: newDateRange.from,
@@ -74,6 +80,7 @@ export function DateRangePicker({
       return;
     }
 
+    // disable taken dates
     for (const disabledDateRange of disabledDateRanges) {
       if (
         (disabledDateRange.startsAt >= newDateRange.from &&
