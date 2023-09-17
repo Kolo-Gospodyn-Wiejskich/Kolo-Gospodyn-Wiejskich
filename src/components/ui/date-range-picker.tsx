@@ -134,6 +134,7 @@ export function DateRangePicker({
             initialFocus
             mode="range"
             max={14}
+            fixedWeeks={true}
             defaultMonth={date?.from}
             selected={date}
             onSelect={handleSelectDate}
