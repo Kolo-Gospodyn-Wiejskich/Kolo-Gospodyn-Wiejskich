@@ -116,7 +116,7 @@ export default function LogIn() {
           </div>
           <div className="flex flex-col">
             <label htmlFor="password" className="label label-text">
-              Password
+              Hasło
             </label>
             <input
               type="password"
