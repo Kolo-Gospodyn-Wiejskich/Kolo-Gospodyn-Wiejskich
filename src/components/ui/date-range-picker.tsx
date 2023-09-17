@@ -48,6 +48,22 @@ export function DateRangePicker({
   };
 
   const handleSelectDate = (newDateRange: DateRange | undefined) => {
+    if (date?.from && date?.to) {
+      if (newDateRange?.from && newDateRange.from !== date?.from) {
+        setDate({
+          from: newDateRange.from,
+        });
+        return;
+      }
+
+      if (newDateRange?.to && newDateRange.to !== date?.to) {
+        setDate({
+          from: newDateRange.to,
+        });
+        return;
+      }
+    }
+
     if (
       !newDateRange ||
       !disabledDateRanges ||
