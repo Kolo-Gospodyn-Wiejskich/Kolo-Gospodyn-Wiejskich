@@ -59,7 +59,8 @@ export default function AddCompetition() {
     watch,
     clearErrors,
     setValue,
-    resetField,
+    getValues,
+    reset,
   } = useForm<FormSchema>({
     resolver: zodResolver(competitionSchema),
   });
@@ -78,18 +79,27 @@ export default function AddCompetition() {
   const dateRangeValue = useAtomValue(dateRangeAtom);
 
   useEffect(() => {
-    console.log({ dateRangeValue });
-
     if (!dateRangeValue) {
-      resetField("startsAt");
-      resetField("endsAt");
+      reset({
+        name: getValues("name"),
+      });
       return;
     }
     if (dateRangeValue.from) setValue("startsAt", dateRangeValue.from);
-    else resetField("startsAt");
+    else {
+      reset({
+        name: getValues("name"),
+        endsAt: getValues("endsAt"),
+      });
+    }
     if (dateRangeValue.to) setValue("endsAt", dateRangeValue.to);
-    else resetField("endsAt");
-  }, [dateRangeValue, setValue, resetField]);
+    else {
+      reset({
+        name: getValues("name"),
+        startsAt: getValues("startsAt"),
+      });
+    }
+  }, [dateRangeValue, setValue, reset, getValues]);
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     setCustomIsLoading(true);
@@ -103,8 +113,6 @@ export default function AddCompetition() {
       startsAt: data.startsAt,
       endsAt: correctEndsAt,
     };
-
-    console.log(dataWithCorrectEndsAt);
 
     addCompetition(dataWithCorrectEndsAt);
   };
