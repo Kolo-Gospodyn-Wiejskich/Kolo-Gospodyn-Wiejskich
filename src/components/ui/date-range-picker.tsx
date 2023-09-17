@@ -14,6 +14,7 @@ import { CalendarIcon } from "@radix-ui/react-icons";
 import { cn } from "~/utils/tailwind-merge";
 import { useAtom } from "jotai";
 import { dateRangeAtom } from "~/pages/add-competition";
+import { api } from "~/utils/api";
 
 export function DateRangePicker({
   className,
@@ -26,6 +27,25 @@ export function DateRangePicker({
   const [date, setDate] = useAtom<DateRange | undefined>(dateRangeAtom);
 
   const numberOfMonths = useNumberOfMonths();
+
+  const { data: disabledDateRanges } =
+    api.competitions.getAllDisabledDateRanges.useQuery();
+
+  const isDateDisabled = (dateToCheck: Date) => {
+    if (dateToCheck <= new Date()) return true;
+
+    if (!disabledDateRanges) return false;
+
+    for (const disabledDateRange of disabledDateRanges) {
+      if (
+        dateToCheck >= disabledDateRange.startsAt &&
+        dateToCheck <= disabledDateRange.endsAt
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -70,7 +90,7 @@ export function DateRangePicker({
             selected={date}
             onSelect={setDate}
             numberOfMonths={numberOfMonths}
-            disabled={(date) => date <= new Date()}
+            disabled={isDateDisabled}
             className="bg-base-100"
           />
         </PopoverContent>

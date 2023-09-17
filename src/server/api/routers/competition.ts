@@ -17,6 +17,25 @@ export const competitionRouter = createTRPCRouter({
       take: 100,
     });
   }),
+  getAllDisabledDateRanges: publicProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.competiton.findMany({
+      // only get those not in the past, since those are already disabled
+      where: {
+        endsAt: {
+          gt: new Date(),
+        },
+      },
+      select: {
+        startsAt: true,
+        endsAt: true,
+      },
+      // prioritize those closer to current date
+      orderBy: {
+        startsAt: "asc",
+      },
+      take: 100,
+    });
+  }),
   getDetailsById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
