@@ -92,18 +92,6 @@ export function DateRangePicker({
       return;
     }
 
-    // disable taken dates
-    for (const takenDateRange of takenDateRanges) {
-      if (
-        (takenDateRange.from >= newDateRange.from &&
-          takenDateRange.from <= newDateRange.to) ||
-        (takenDateRange.to >= newDateRange.from &&
-          takenDateRange.to <= newDateRange.to)
-      ) {
-        return;
-      }
-    }
-
     setDate(newDateRange);
   };
 
