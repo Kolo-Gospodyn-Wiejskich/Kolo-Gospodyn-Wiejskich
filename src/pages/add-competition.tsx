@@ -85,7 +85,7 @@ export default function AddCompetition() {
     }
   });
 
-  useCustomDatePickerBehavior({
+  useSyncFormStateToDateRangePicker({
     setValue,
     getValues,
     reset,
@@ -176,7 +176,7 @@ export default function AddCompetition() {
   );
 }
 
-const useCustomDatePickerBehavior = ({
+const useSyncFormStateToDateRangePicker = ({
   setValue,
   reset,
   getValues,
