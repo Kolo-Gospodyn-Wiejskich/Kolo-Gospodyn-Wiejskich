@@ -37,7 +37,7 @@ export function DateRangePicker({
     api.competitions.getAllTakenDateRanges.useQuery();
 
   const handleSelectDate = (newDateRange: DateRange | undefined) => {
-    // adjust select behaviour
+    // adjust select behavior
     if (date?.from && date?.to) {
       if (newDateRange?.from === date.to) {
         setDate(undefined);
