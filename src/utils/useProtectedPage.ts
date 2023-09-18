@@ -7,7 +7,7 @@ export const useProtectedPage = () => {
   const { status } = useSession();
 
   useEffect(() => {
-    if (status === "unauthenticated") void router.push("/");
+    if (status === "unauthenticated") void router.push("/auth/login");
   }, [router, status]);
 
   return { isAuthed: status === "authenticated" };
