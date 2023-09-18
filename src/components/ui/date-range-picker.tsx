@@ -1,11 +1,7 @@
 import * as React from "react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
-import {
-  type DateAfter,
-  type DateBefore,
-  type DateRange,
-} from "react-day-picker";
+import { type DateRange } from "react-day-picker";
 
 import { Button } from "./dependencies/button";
 import { Calendar } from "./dependencies/calendar";
@@ -21,6 +17,12 @@ import { dateRangeAtom } from "~/pages/add-competition";
 import { api } from "~/utils/api";
 import { type Matcher } from "react-day-picker";
 
+type NonUndefinedValues<T> = Required<{
+  [K in keyof T]: NonNullable<T[K]>;
+}>;
+
+type FullDateRange = NonUndefinedValues<DateRange>;
+
 export function DateRangePicker({
   className,
   isError,
@@ -31,33 +33,8 @@ export function DateRangePicker({
 }) {
   const [date, setDate] = useAtom(dateRangeAtom);
 
-  const numberOfMonths = useNumberOfMonths();
-
   const { data: takenDateRanges } =
     api.competitions.getAllTakenDateRanges.useQuery();
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const getUnreachableRanges = (): (DateBefore | DateAfter)[] => {
-    const selectedDate = date?.from;
-
-    if (!selectedDate || !takenDateRanges) return [];
-
-    return takenDateRanges.map((rangeToExtend) => {
-      if (rangeToExtend.from >= selectedDate)
-        return { after: rangeToExtend.from };
-      return { before: rangeToExtend.to };
-    });
-  };
-
-  const disabledDateMatchers = takenDateRanges
-    ? ([
-        ...takenDateRanges,
-        ...getUnreachableRanges(),
-        { before: tomorrow },
-      ] satisfies Matcher[])
-    : ([...getUnreachableRanges(), { before: tomorrow }] satisfies Matcher[]);
 
   const handleSelectDate = (newDateRange: DateRange | undefined) => {
     // adjust select behaviour
@@ -94,6 +71,13 @@ export function DateRangePicker({
 
     setDate(newDateRange);
   };
+
+  const numberOfMonths = useNumberOfMonths();
+
+  const disabledMatchers = getDisabledMatchers({
+    dbTakenRanges: takenDateRanges,
+    selectedDate: date?.from,
+  });
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -139,7 +123,7 @@ export function DateRangePicker({
             selected={date}
             onSelect={handleSelectDate}
             numberOfMonths={numberOfMonths}
-            disabled={disabledDateMatchers}
+            disabled={disabledMatchers}
             className="bg-base-100"
           />
         </PopoverContent>
@@ -147,6 +131,38 @@ export function DateRangePicker({
     </div>
   );
 }
+
+interface GetDisabledMatchersProps {
+  dbTakenRanges: FullDateRange[] | undefined;
+  selectedDate: Date | undefined;
+}
+
+const getDisabledMatchers = (props: GetDisabledMatchersProps): Matcher[] => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  return [...getUnreachableRanges(props), { before: tomorrow }];
+};
+
+const getUnreachableRanges = ({
+  dbTakenRanges,
+  selectedDate,
+}: GetDisabledMatchersProps): Matcher[] => {
+  if (!dbTakenRanges) return [];
+
+  if (!selectedDate) return dbTakenRanges;
+
+  return dbTakenRanges.map((rangeToExtend) => {
+    const fromAndDayBefore = new Date(rangeToExtend.from);
+    fromAndDayBefore.setDate(fromAndDayBefore.getDate() - 1);
+
+    const toAndDayAfter = new Date(rangeToExtend.to);
+    toAndDayAfter.setDate(toAndDayAfter.getDate() + 1);
+
+    if (rangeToExtend.from >= selectedDate) return { after: fromAndDayBefore };
+    return { before: toAndDayAfter };
+  });
+};
 
 const useNumberOfMonths = () => {
   const [numberOfMonths, setNumberOfMonths] = React.useState(1);
