@@ -3,7 +3,15 @@ import { atom, useAtomValue } from "jotai";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { type DateRange } from "react-day-picker";
-import { type SubmitHandler, useForm } from "react-hook-form";
+import {
+  type SubmitHandler,
+  useForm,
+  UseFormSetValue,
+  UseFormGetValues,
+  UseFormTrigger,
+  UseFormStateReturn,
+  UseFormReset,
+} from "react-hook-form";
 import toast from "react-hot-toast";
 import { type z } from "zod";
 import { type LayoutProps } from "~/components/layout";
@@ -77,47 +85,13 @@ export default function AddCompetition() {
     }
   });
 
-  const dateRangeValue = useAtomValue(dateRangeAtom);
-
-  useEffect(() => {
-    if (!dateRangeValue) {
-      reset(
-        {
-          name: getValues("name"),
-        },
-        { keepIsSubmitted: true },
-      );
-      if (isSubmitted) {
-        void trigger("startsAt");
-        void trigger("endsAt");
-      }
-      return;
-    }
-    if (dateRangeValue.from) setValue("startsAt", dateRangeValue.from);
-    else {
-      reset(
-        {
-          name: getValues("name"),
-          endsAt: getValues("endsAt"),
-        },
-        { keepIsSubmitted: true },
-      );
-    }
-    if (dateRangeValue.to) setValue("endsAt", dateRangeValue.to);
-    else {
-      reset(
-        {
-          name: getValues("name"),
-          startsAt: getValues("startsAt"),
-        },
-        { keepIsSubmitted: true },
-      );
-    }
-    if (isSubmitted) {
-      void trigger("startsAt");
-      void trigger("endsAt");
-    }
-  }, [dateRangeValue, setValue, reset, getValues, isSubmitted, trigger]);
+  useCustomDatePickerBehavior({
+    setValue,
+    getValues,
+    reset,
+    trigger,
+    isSubmitted,
+  });
 
   const onSubmit: SubmitHandler<FormSchema> = (data) => {
     setCustomIsLoading(true);
@@ -201,3 +175,59 @@ export default function AddCompetition() {
     </div>
   );
 }
+
+const useCustomDatePickerBehavior = ({
+  setValue,
+  reset,
+  getValues,
+  isSubmitted,
+  trigger,
+}: {
+  setValue: UseFormSetValue<FormSchema>;
+  reset: UseFormReset<FormSchema>;
+  getValues: UseFormGetValues<FormSchema>;
+  isSubmitted: UseFormStateReturn<FormSchema>["isSubmitted"];
+  trigger: UseFormTrigger<FormSchema>;
+}) => {
+  const dateRangeValue = useAtomValue(dateRangeAtom);
+
+  useEffect(() => {
+    if (!dateRangeValue) {
+      reset(
+        {
+          name: getValues("name"),
+        },
+        { keepIsSubmitted: true },
+      );
+      if (isSubmitted) {
+        void trigger("startsAt");
+        void trigger("endsAt");
+      }
+      return;
+    }
+    if (dateRangeValue.from) setValue("startsAt", dateRangeValue.from);
+    else {
+      reset(
+        {
+          name: getValues("name"),
+          endsAt: getValues("endsAt"),
+        },
+        { keepIsSubmitted: true },
+      );
+    }
+    if (dateRangeValue.to) setValue("endsAt", dateRangeValue.to);
+    else {
+      reset(
+        {
+          name: getValues("name"),
+          startsAt: getValues("startsAt"),
+        },
+        { keepIsSubmitted: true },
+      );
+    }
+    if (isSubmitted) {
+      void trigger("startsAt");
+      void trigger("endsAt");
+    }
+  }, [dateRangeValue, setValue, reset, getValues, isSubmitted, trigger]);
+};
