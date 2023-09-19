@@ -34,7 +34,7 @@ export function DateRangePicker({
   const [date, setDate] = useAtom(dateRangeAtom);
 
   const { data: takenDateRanges } =
-    api.competitions.getAllTakenDateRanges.useQuery();
+    api.competition.getAllTakenDateRanges.useQuery();
 
   const handleSelectDate = (newDateRange: DateRange | undefined) => {
     // adjust select behavior

@@ -41,7 +41,7 @@ export default function AddCompetition() {
   const [customIsLoading, setCustomIsLoading] = useState(false);
   const router = useRouter();
 
-  const { mutate: addCompetition } = api.competitions.addNew.useMutation({
+  const { mutate: addCompetition } = api.competition.addNew.useMutation({
     onSuccess: async ({ id }) => {
       await router.push(`/competition/${id}`);
     },

@@ -42,14 +42,22 @@ export const competitionRouter = createTRPCRouter({
       to: endsAt,
     }));
   }),
-  getDetailsById: publicProcedure
+  getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      return ctx.prisma.competiton.findUnique({
+      const competition = await ctx.prisma.competiton.findUnique({
         where: {
           id: input.id,
         },
       });
+
+      if (!competition)
+        throw new TRPCError({
+          message: "Konkurencja nie istnieje",
+          code: "NOT_FOUND",
+        });
+
+      return competition;
     }),
   addNew: protectedProcedure
     .input(competitionSchema)

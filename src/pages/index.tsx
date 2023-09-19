@@ -50,7 +50,7 @@ function CompetitionList() {
     data: competitions,
     isLoading,
     error,
-  } = api.competitions.getAll.useQuery();
+  } = api.competition.getAll.useQuery();
 
   if (isLoading)
     return (

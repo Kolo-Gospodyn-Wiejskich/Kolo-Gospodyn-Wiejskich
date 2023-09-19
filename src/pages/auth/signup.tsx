@@ -44,7 +44,7 @@ function SecretCodeForm() {
     isCorrectSecretCodeEnteredAtom,
   );
 
-  const { mutate: checkSecretCode } = api.users.checkSecretCode.useMutation({
+  const { mutate: checkSecretCode } = api.user.checkSecretCode.useMutation({
     onSuccess: () => {
       setIsCorrectSecretCodeEntered(true);
     },
@@ -125,7 +125,7 @@ function SignUpForm() {
   const [customIsLoading, setCustomIsLoading] = useState(false);
   const router = useRouter();
 
-  const { mutate: signUp } = api.users.signUp.useMutation({
+  const { mutate: signUp } = api.user.signUp.useMutation({
     onSuccess: async (data) => {
       const result = await signIn("credentials", {
         firstName: data.firstName,
