@@ -6,9 +6,11 @@ export const useProtectedPage = () => {
   const router = useRouter();
   const { status } = useSession();
 
-  useEffect(() => {
-    if (status === "unauthenticated") void router.push("/auth/login");
-  }, [router, status]);
+  const isUnauthed = status === "unauthenticated";
 
-  return { isAuthed: status === "authenticated" };
+  useEffect(() => {
+    if (isUnauthed) void router.push("/auth/login");
+  }, [router, isUnauthed]);
+
+  return { isUnauthed };
 };

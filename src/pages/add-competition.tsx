@@ -109,8 +109,8 @@ export default function AddCompetition() {
     addCompetition(dataWithCorrectEndsAt);
   };
 
-  const { isAuthed } = useProtectedPage();
-  if (!isAuthed) return null;
+  const { isUnauthed } = useProtectedPage();
+  if (isUnauthed) return null;
 
   return (
     <div className="w-[80vw] space-y-4 sm:w-96">
