@@ -4,7 +4,7 @@ import Link from "next/link";
 import { type LayoutProps } from "~/components/layout";
 import { api } from "~/utils/api";
 
-export function getServerSideProps() {
+export function getStaticProps() {
   return {
     props: {
       layout: {

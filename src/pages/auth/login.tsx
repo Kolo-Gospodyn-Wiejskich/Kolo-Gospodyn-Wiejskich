@@ -10,7 +10,7 @@ import { cn } from "~/utils/tailwind-merge";
 
 type FormSchema = z.infer<typeof loginSchema>;
 
-export function getServerSideProps() {
+export function getStaticProps() {
   return {
     props: {
       layout: {

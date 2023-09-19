@@ -22,7 +22,7 @@ import { cn } from "~/utils/tailwind-merge";
 import { useProtectedPage } from "~/utils/useProtectedPage";
 // import  from '@radix-ui/react-form';
 
-export function getServerSideProps() {
+export function getStaticProps() {
   return {
     props: {
       layout: {

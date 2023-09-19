@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 
 const isCorrectSecretCodeEnteredAtom = atom(false);
 
-export function getServerSideProps() {
+export function getStaticProps() {
   return {
     props: {
       layout: {
