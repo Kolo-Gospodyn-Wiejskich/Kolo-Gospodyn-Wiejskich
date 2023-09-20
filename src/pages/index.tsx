@@ -57,7 +57,7 @@ function ActiveCompetition() {
         Konkurencja{" "}
         <Link
           href={`/competition/${competition.id}`}
-          className=" link-secondary link font-semibold"
+          className="link-secondary link font-semibold"
         >
           {competition.name}
         </Link>
