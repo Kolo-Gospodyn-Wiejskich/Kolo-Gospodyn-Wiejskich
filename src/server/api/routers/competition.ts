@@ -8,11 +8,32 @@ import {
 import { competitionSchema } from "~/utils/schemas";
 
 export const competitionRouter = createTRPCRouter({
+  getActive: publicProcedure.query(async ({ ctx }) => {
+    const active = await ctx.prisma.competiton.findFirst({
+      where: {
+        startsAt: {
+          lte: new Date(),
+        },
+        endsAt: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    if (!active) {
+      return { isActive: false, competition: null } as const;
+    }
+
+    return { isActive: true, competition: active } as const;
+  }),
   getAll: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.competiton.findMany({
       select: {
         id: true,
         name: true,
+      },
+      orderBy: {
+        startsAt: "asc",
       },
       take: 100,
     });

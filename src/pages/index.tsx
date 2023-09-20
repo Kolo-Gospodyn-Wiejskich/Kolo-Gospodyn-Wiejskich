@@ -1,8 +1,9 @@
 import { type Competiton } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { type CSSProperties, useEffect, useState } from "react";
 import { type LayoutProps } from "~/components/layout";
 import { api } from "~/utils/api";
+import { cn } from "~/utils/tailwind-merge";
 
 export function getStaticProps() {
   return {
@@ -18,30 +19,77 @@ export function getStaticProps() {
 
 export default function Home() {
   return (
-    <div className="container flex h-full flex-col items-center justify-center gap-16 py-8">
+    <div className="container flex h-full flex-col items-center justify-center gap-12 py-8">
       <h1 className="text-center text-5xl font-extrabold sm:text-[5rem]">
         <span className="text-primary">Koło</span>{" "}
         <span className="text-secondary">Gospodyń</span>{" "}
         <span className="text-accent">Wiejskich</span>
       </h1>
-      <Welcome />
+      <ActiveCompetition />
       <CompetitionList />
     </div>
   );
 }
 
-function Welcome() {
-  const { data } = useSession();
+function ActiveCompetition() {
+  const { data, isLoading, error } = api.competition.getActive.useQuery();
 
-  if (!data) return null;
+  if (isLoading)
+    return (
+      <div className="flex flex-col items-center space-y-2 text-center text-4xl">
+        <p className="flex items-center gap-4">
+          <span>Aktywna konkurencja: </span>
+          <span className="loading loading-dots loading-lg text-secondary" />
+        </p>
+        <p className="flex items-center gap-4">
+          <span>Koniec </span>{" "}
+          <span className="loading loading-dots loading-lg" />
+        </p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="alert alert-error max-w-fit text-4xl">
+        Error: {error.message}
+      </div>
+    );
+
+  const { isActive, competition } = data;
+
+  if (!isActive) {
+    return (
+      <div className="text-center text-4xl">Brak aktywnej konkurencji</div>
+    );
+  }
 
   return (
-    <div className="text-center text-3xl">
-      Witaj,{" "}
-      <span className="font-semibold">
-        {data.user.firstName} {data.user.lastName}
-      </span>
+    <div className="space-y-4 text-center text-4xl">
+      <p>
+        Konkurencja:{" "}
+        <Link
+          href={`/competition/${competition.id}`}
+          className=" link-secondary link font-semibold"
+        >
+          {competition.name}
+        </Link>
+      </p>
+      <p>Odliczanie do końca:</p>
+      <ActiveCompetitionCountDown deadline={competition.endsAt} />
     </div>
+  );
+}
+
+function ActiveCompetitionCountDown({ deadline }: { deadline: Date }) {
+  const { days, hours, minutes, seconds } = useCountdown(deadline);
+
+  return (
+    <span className="countdown font-mono text-5xl">
+      <span style={{ "--value": days } as CSSProperties} />:
+      <span style={{ "--value": hours } as CSSProperties} />:
+      <span style={{ "--value": minutes } as CSSProperties} />:
+      <span style={{ "--value": seconds } as CSSProperties} />
+    </span>
   );
 }
 
@@ -83,10 +131,18 @@ function CompetitionList() {
 type CompetitionProps = Pick<Competiton, "id" | "name">;
 
 function Competition({ id, name }: CompetitionProps) {
+  const { data: activeCompetition } = api.competition.getActive.useQuery();
+
   return (
     <Link
       href={`/competition/${id}`}
-      className="flex h-56 w-56 items-center justify-center rounded-xl bg-base-200 p-4"
+      className={cn(
+        "flex h-56 w-56 items-center justify-center rounded-xl bg-base-200 p-4",
+        {
+          "border-4 border-secondary":
+            id === activeCompetition?.competition?.id,
+        },
+      )}
     >
       <div className="flex h-full w-full items-center justify-center rounded-xl bg-base-300 text-xl font-semibold">
         <div className="overflow-hidden text-ellipsis p-4 text-center">
@@ -96,3 +152,35 @@ function Competition({ id, name }: CompetitionProps) {
     </Link>
   );
 }
+
+const useCountdown = (deadline: Date) => {
+  const initialTime = deadline.getTime() - Date.now();
+
+  const [days, setDays] = useState(
+    Math.floor(initialTime / (1000 * 60 * 60 * 24)),
+  );
+  const [hours, setHours] = useState(
+    Math.floor((initialTime / (1000 * 60 * 60)) % 24),
+  );
+  const [minutes, setMinutes] = useState(
+    Math.floor((initialTime / 1000 / 60) % 60),
+  );
+  const [seconds, setSeconds] = useState(Math.floor((initialTime / 1000) % 60));
+
+  const setTime = (endDate: Date) => {
+    const time = endDate.getTime() - Date.now();
+
+    setDays(Math.floor(time / (1000 * 60 * 60 * 24)));
+    setHours(Math.floor((time / (1000 * 60 * 60)) % 24));
+    setMinutes(Math.floor((time / 1000 / 60) % 60));
+    setSeconds(Math.floor((time / 1000) % 60));
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => setTime(deadline), 1000);
+
+    return () => clearInterval(interval);
+  }, [deadline]);
+
+  return { days, hours, minutes, seconds };
+};
