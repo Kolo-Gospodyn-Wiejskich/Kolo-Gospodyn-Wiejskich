@@ -34,19 +34,7 @@ export default function Home() {
 function ActiveCompetition() {
   const { data, isLoading, error } = api.competition.getActive.useQuery();
 
-  if (isLoading)
-    return (
-      <div className="flex flex-col items-center space-y-2 text-center text-4xl">
-        <p className="flex items-center gap-4">
-          <span>Aktywna konkurencja: </span>
-          <span className="loading loading-dots loading-lg text-secondary" />
-        </p>
-        <p className="flex items-center gap-4">
-          <span>Koniec </span>{" "}
-          <span className="loading loading-dots loading-lg" />
-        </p>
-      </div>
-    );
+  if (isLoading) return null;
 
   if (error)
     return (
@@ -66,7 +54,7 @@ function ActiveCompetition() {
   return (
     <div className="space-y-4 text-center text-4xl">
       <p>
-        Konkurencja:{" "}
+        Konkurencja{" "}
         <Link
           href={`/competition/${competition.id}`}
           className=" link-secondary link font-semibold"
@@ -74,7 +62,7 @@ function ActiveCompetition() {
           {competition.name}
         </Link>
       </p>
-      <p>Odliczanie do końca:</p>
+      <p>Odliczanie do końca</p>
       <ActiveCompetitionCountDown deadline={competition.endsAt} />
     </div>
   );
@@ -102,7 +90,7 @@ function CompetitionList() {
 
   if (isLoading)
     return (
-      <span className="loading loading-dots loading-lg mt-6 text-accent" />
+      <span className="loading loading-dots loading-lg mt-6 text-secondary" />
     );
 
   if (error)
