@@ -142,33 +142,35 @@ function Competition({ id, name }: CompetitionProps) {
 }
 
 const useCountdown = (deadline: Date) => {
-  const initialTime = deadline.getTime() - Date.now();
+  const initialDiff = deadline.getTime() - Date.now();
 
-  const [days, setDays] = useState(
-    Math.floor(initialTime / (1000 * 60 * 60 * 24)),
-  );
-  const [hours, setHours] = useState(
-    Math.floor((initialTime / (1000 * 60 * 60)) % 24),
-  );
-  const [minutes, setMinutes] = useState(
-    Math.floor((initialTime / 1000 / 60) % 60),
-  );
-  const [seconds, setSeconds] = useState(Math.floor((initialTime / 1000) % 60));
+  const [time, setTime] = useState({
+    days: Math.floor(initialDiff / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((initialDiff / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((initialDiff / 1000 / 60) % 60),
+    seconds: Math.floor((initialDiff / 1000) % 60),
+  });
 
-  const setTime = (endDate: Date) => {
-    const time = endDate.getTime() - Date.now();
+  const handleSetTime = (endDate: Date) => {
+    const diff = endDate.getTime() - Date.now();
 
-    setDays(Math.floor(time / (1000 * 60 * 60 * 24)));
-    setHours(Math.floor((time / (1000 * 60 * 60)) % 24));
-    setMinutes(Math.floor((time / 1000 / 60) % 60));
-    setSeconds(Math.floor((time / 1000) % 60));
+    if (diff <= 0) {
+      setTime({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      return;
+    }
+
+    setTime({
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((diff / 1000 / 60) % 60),
+      seconds: Math.floor((diff / 1000) % 60),
+    });
   };
 
   useEffect(() => {
-    const interval = setInterval(() => setTime(deadline), 1000);
-
+    const interval = setInterval(() => handleSetTime(deadline), 1000);
     return () => clearInterval(interval);
   }, [deadline]);
 
-  return { days, hours, minutes, seconds };
+  return time;
 };
