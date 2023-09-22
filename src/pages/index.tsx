@@ -52,12 +52,12 @@ function ActiveCompetition() {
   }
 
   return (
-    <div className="space-y-4 text-center text-4xl">
+    <div className="w-full space-y-4 text-center text-4xl">
       <p>
-        Konkurencja{" "}
+        <span>Konkurencja </span>
         <Link
           href={`/competition/${competition.id}`}
-          className="link-secondary link font-semibold"
+          className="link-secondary link block overflow-hidden text-ellipsis font-semibold"
         >
           {competition.name}
         </Link>

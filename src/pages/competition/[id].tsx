@@ -92,7 +92,7 @@ export default function CompetitionPage({
 
   return (
     <div className="container flex h-full flex-col items-center justify-center gap-16 py-8">
-      <h1 className="text-center text-5xl font-extrabold text-secondary sm:text-[5rem]">
+      <h1 className="w-full overflow-hidden text-ellipsis text-center text-5xl font-extrabold text-secondary sm:text-[5rem]">
         {competition.name}
       </h1>
       <p className="flex gap-4 text-center text-xl font-semibold">
