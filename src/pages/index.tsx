@@ -126,7 +126,7 @@ function Competition({ id, name, imageUrl }: CompetitionProps) {
     <Link
       href={`/competition/${id}`}
       className={cn(
-        "flex h-56 w-56 items-center justify-center rounded-xl bg-base-200 p-4",
+        "flex h-56 w-56 items-center justify-center rounded-xl bg-base-200 p-4 transition-[filter] hover:brightness-75",
         {
           "border-4 border-secondary":
             id === activeCompetition?.competition?.id,
