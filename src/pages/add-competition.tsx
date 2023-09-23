@@ -47,6 +47,7 @@ type FormSchema = z.infer<typeof formSchema>;
 
 export default function AddCompetition() {
   const [customIsLoading, setCustomIsLoading] = useState(false);
+  const [imgUploadPercent, setImgUploadPercent] = useState(0);
   const router = useRouter();
   const utils = api.useContext();
 
@@ -110,7 +111,7 @@ export default function AddCompetition() {
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     "competitionImageUploader",
     {
-      // onUploadProgress: (progressPercentage) => {},
+      onUploadProgress: setImgUploadPercent,
       onUploadError: (error) => {
         setError("imageFile", { type: "server", message: error.message });
         setCustomIsLoading(false);
@@ -251,6 +252,19 @@ export default function AddCompetition() {
         <button disabled={customIsLoading} className="btn btn-primary mt-2">
           Dodaj
         </button>
+        {isUploading && (
+          <>
+            <progress
+              className="progress progress-primary"
+              value={imgUploadPercent}
+              max="100"
+            />
+            <p className="text-center">
+              Przesyłanie zdjęcia:{" "}
+              <span className="text-primary">{imgUploadPercent}%</span>
+            </p>
+          </>
+        )}
       </form>
     </div>
   );
