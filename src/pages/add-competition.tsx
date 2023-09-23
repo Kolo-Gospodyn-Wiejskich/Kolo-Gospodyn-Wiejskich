@@ -21,7 +21,6 @@ import { competitionSchema } from "~/utils/schemas";
 import { cn } from "~/utils/tailwind-merge";
 import { useProtectedPage } from "~/utils/useProtectedPage";
 import { useUploadThing } from "~/utils/uploadthing";
-// import  from '@radix-ui/react-form';
 
 export function getStaticProps() {
   return {
