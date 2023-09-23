@@ -48,9 +48,15 @@ type FormSchema = z.infer<typeof formSchema>;
 export default function AddCompetition() {
   const [customIsLoading, setCustomIsLoading] = useState(false);
   const router = useRouter();
+  const utils = api.useContext();
 
   const { mutate: addCompetition } = api.competition.addNew.useMutation({
     onSuccess: async ({ id }) => {
+      await Promise.allSettled([
+        utils.competition.getAll.invalidate(),
+        utils.competition.getAllTakenDateRanges.invalidate(),
+      ]);
+
       await router.push(`/competition/${id}`);
     },
     onError: (error) => {
