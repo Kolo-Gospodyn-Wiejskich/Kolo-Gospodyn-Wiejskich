@@ -133,13 +133,13 @@ function Competition({ id, name, imageUrl }: CompetitionProps) {
         },
       )}
     >
-      <div className="relative z-40 flex h-full w-full items-center justify-center rounded-xl bg-black bg-opacity-50 text-xl font-semibold">
+      <div className="relative z-40 flex h-full w-full items-center justify-center rounded-xl bg-black bg-opacity-60 text-xl font-semibold">
         <Image
           src={imageUrl}
           alt={`Zdjęcie przedstawiające ${name}`}
           width={300}
           height={300}
-          className="absolute inset-0 z-30 opacity-50"
+          className="absolute inset-0 z-30 h-full w-full rounded-xl object-cover object-center opacity-50"
         />
         <div className="z-50 overflow-hidden text-ellipsis p-4 text-center text-white">
           {name}
