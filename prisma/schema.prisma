@@ -17,6 +17,7 @@ datasource db {
 model Competiton {
     id       String   @id @default(cuid())
     name     String
+    imageUrl String
     startsAt DateTime
     endsAt   DateTime
 

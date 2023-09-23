@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { atom, useAtomValue } from "jotai";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import { type DateRange } from "react-day-picker";
 import {
   type SubmitHandler,
@@ -13,13 +13,14 @@ import {
   type UseFormReset,
 } from "react-hook-form";
 import toast from "react-hot-toast";
-import { type z } from "zod";
+import { z } from "zod";
 import { type LayoutProps } from "~/components/layout";
-import { DateRangePicker } from "~/components/ui/date-range-picker";
+import { DateRangePicker } from "~/components/form/date-range-picker";
 import { api } from "~/utils/api";
 import { competitionSchema } from "~/utils/schemas";
 import { cn } from "~/utils/tailwind-merge";
 import { useProtectedPage } from "~/utils/useProtectedPage";
+import { useUploadThing } from "~/utils/uploadthing";
 // import  from '@radix-ui/react-form';
 
 export function getStaticProps() {
@@ -34,8 +35,15 @@ export function getStaticProps() {
 }
 
 export const dateRangeAtom = atom<DateRange | undefined>(undefined);
+export const imageUrlAtom = atom<string | null>(null);
 
-type FormSchema = z.infer<typeof competitionSchema>;
+const formSchema = competitionSchema.omit({ imageUrl: true }).extend({
+  imageFile: z.custom<File>((file) => file instanceof File, {
+    message: "Zdjęcie poglądowe jest wymagane",
+  }),
+});
+
+type FormSchema = z.infer<typeof formSchema>;
 
 export default function AddCompetition() {
   const [customIsLoading, setCustomIsLoading] = useState(false);
@@ -71,7 +79,7 @@ export default function AddCompetition() {
     reset,
     trigger,
   } = useForm<FormSchema>({
-    resolver: zodResolver(competitionSchema),
+    resolver: zodResolver(formSchema),
   });
 
   watch((_, { name }) => {
@@ -93,24 +101,63 @@ export default function AddCompetition() {
     isSubmitted,
   });
 
-  const onSubmit: SubmitHandler<FormSchema> = (data) => {
+  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+    "competitionImageUploader",
+    {
+      // onUploadProgress: (progressPercentage) => {},
+      onUploadError: (error) => {
+        setError("imageFile", { type: "server", message: error.message });
+        setCustomIsLoading(false);
+      },
+    },
+  );
+
+  const onSubmit: SubmitHandler<FormSchema> = async (data) => {
     setCustomIsLoading(true);
+
+    const res = await startUpload([data.imageFile]);
+
+    // Error message is handled as a callback above
+    if (!res?.[0]?.url) return;
 
     const correctEndsAt = new Date(data.endsAt.getTime());
     correctEndsAt.setSeconds(correctEndsAt.getSeconds() - 1);
     correctEndsAt.setDate(correctEndsAt.getDate() + 1);
 
-    const dataWithCorrectEndsAt = {
-      name: data.name,
-      startsAt: data.startsAt,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { imageFile: _, endsAt: __, ...dataToMakeFinal } = data;
+
+    const finalData = {
+      ...dataToMakeFinal,
       endsAt: correctEndsAt,
+      imageUrl: res[0].url,
     };
 
-    addCompetition(dataWithCorrectEndsAt);
+    console.log(finalData);
+
+    addCompetition(finalData);
+  };
+
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+
+    if (!fileList || fileList.length === 0 || !fileList[0]) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { imageFile: _, ...currentValues } = getValues();
+      reset(currentValues, { keepIsSubmitted: true, keepErrors: true });
+
+      if (isSubmitted) await trigger("imageFile");
+      return;
+    }
+
+    setValue("imageFile", fileList[0]);
+    if (isSubmitted) await trigger("imageFile");
   };
 
   const { isUnauthed } = useProtectedPage();
   if (isUnauthed) return null;
+
+  const maxImageSize = permittedFileInfo?.config.image?.maxFileSize;
 
   return (
     <div className="w-[80vw] space-y-4 sm:w-96">
@@ -143,6 +190,33 @@ export default function AddCompetition() {
           {errors.name && (
             <div className="label label-text-alt text-error">
               {errors.name.message}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="image" className="label label-text">
+            Zdjęcie poglądowe
+          </label>
+          <input
+            accept="image/*"
+            placeholder="Wybierz zdjęcie poglądowe"
+            type="file"
+            id="image"
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            onChange={handleFileChange}
+            disabled={customIsLoading}
+            className={cn("file-input file-input-bordered", {
+              "file-input-error text-error": errors.imageFile,
+            })}
+          />
+          {errors.imageFile && (
+            <div className="label label-text-alt text-error">
+              {errors.imageFile.message}
+            </div>
+          )}
+          {!!maxImageSize && (
+            <div className="label label-text-alt">
+              Maksymalny rozmiar: {maxImageSize}
             </div>
           )}
         </div>
@@ -193,12 +267,10 @@ const useSyncFormStateToDateRangePicker = ({
 
   useEffect(() => {
     if (!dateRangeValue) {
-      reset(
-        {
-          name: getValues("name"),
-        },
-        { keepIsSubmitted: true },
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { startsAt: _, endsAt: __, ...currentValues } = getValues();
+      reset(currentValues, { keepIsSubmitted: true, keepErrors: true });
+
       if (isSubmitted) {
         void trigger("startsAt");
         void trigger("endsAt");
@@ -207,23 +279,15 @@ const useSyncFormStateToDateRangePicker = ({
     }
     if (dateRangeValue.from) setValue("startsAt", dateRangeValue.from);
     else {
-      reset(
-        {
-          name: getValues("name"),
-          endsAt: getValues("endsAt"),
-        },
-        { keepIsSubmitted: true },
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { startsAt: _, ...currentValues } = getValues();
+      reset(currentValues, { keepIsSubmitted: true, keepErrors: true });
     }
     if (dateRangeValue.to) setValue("endsAt", dateRangeValue.to);
     else {
-      reset(
-        {
-          name: getValues("name"),
-          startsAt: getValues("startsAt"),
-        },
-        { keepIsSubmitted: true },
-      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { endsAt: _, ...currentValues } = getValues();
+      reset(currentValues, { keepIsSubmitted: true, keepErrors: true });
     }
     if (isSubmitted) {
       void trigger("startsAt");

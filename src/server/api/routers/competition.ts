@@ -31,6 +31,7 @@ export const competitionRouter = createTRPCRouter({
       select: {
         id: true,
         name: true,
+        imageUrl: true,
       },
       orderBy: {
         startsAt: "asc",
@@ -83,6 +84,8 @@ export const competitionRouter = createTRPCRouter({
   addNew: protectedProcedure
     .input(competitionSchema)
     .mutation(async ({ input, ctx }) => {
+      console.log({ input });
+
       if (input.startsAt <= new Date())
         throw new TRPCError({
           message: "Konkurencja nie może zaczynać się w przeszłości",

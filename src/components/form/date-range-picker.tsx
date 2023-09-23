@@ -1,21 +1,21 @@
-import * as React from "react";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
+import * as React from "react";
 import { type DateRange } from "react-day-picker";
 
-import { Button } from "./dependencies/button";
-import { Calendar } from "./dependencies/calendar";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { useAtom } from "jotai";
+import { type Matcher } from "react-day-picker";
+import { dateRangeAtom } from "~/pages/add-competition";
+import { api } from "~/utils/api";
+import { cn } from "~/utils/tailwind-merge";
+import { Button } from "../ui/dependencies/button";
+import { Calendar } from "../ui/dependencies/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "./dependencies/popover";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { cn } from "~/utils/tailwind-merge";
-import { useAtom } from "jotai";
-import { dateRangeAtom } from "~/pages/add-competition";
-import { api } from "~/utils/api";
-import { type Matcher } from "react-day-picker";
+} from "../ui/dependencies/popover";
 
 type NonUndefinedValues<T> = Required<{
   [K in keyof T]: NonNullable<T[K]>;

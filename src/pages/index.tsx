@@ -1,4 +1,5 @@
 import { type Competiton } from "@prisma/client";
+import Image from "next/image";
 import Link from "next/link";
 import { type CSSProperties, useEffect, useState } from "react";
 import { type LayoutProps } from "~/components/layout";
@@ -116,9 +117,9 @@ function CompetitionList() {
   );
 }
 
-type CompetitionProps = Pick<Competiton, "id" | "name">;
+type CompetitionProps = Pick<Competiton, "id" | "name" | "imageUrl">;
 
-function Competition({ id, name }: CompetitionProps) {
+function Competition({ id, name, imageUrl }: CompetitionProps) {
   const { data: activeCompetition } = api.competition.getActive.useQuery();
 
   return (
@@ -132,8 +133,15 @@ function Competition({ id, name }: CompetitionProps) {
         },
       )}
     >
-      <div className="flex h-full w-full items-center justify-center rounded-xl bg-base-300 text-xl font-semibold">
-        <div className="overflow-hidden text-ellipsis p-4 text-center">
+      <div className="relative z-40 flex h-full w-full items-center justify-center rounded-xl bg-black bg-opacity-50 text-xl font-semibold">
+        <Image
+          src={imageUrl}
+          alt={`Zdjęcie przedstawiające ${name}`}
+          width={300}
+          height={300}
+          className="absolute inset-0 z-30 opacity-50"
+        />
+        <div className="z-50 overflow-hidden text-ellipsis p-4 text-center text-white">
           {name}
         </div>
       </div>
