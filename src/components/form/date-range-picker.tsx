@@ -170,7 +170,7 @@ const useNumberOfMonths = () => {
   const handleScreenChange = (e: MediaQueryListEvent) =>
     setNumberOfMonths(e.matches ? 2 : 1);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (window.matchMedia && window.matchMedia("(min-width: 1024px)").matches)
       setNumberOfMonths(2);
 
