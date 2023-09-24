@@ -28,11 +28,6 @@ export const competitionRouter = createTRPCRouter({
   }),
   getAll: publicProcedure.query(async ({ ctx }) => {
     return ctx.prisma.competiton.findMany({
-      select: {
-        id: true,
-        name: true,
-        imageUrl: true,
-      },
       orderBy: {
         startsAt: "asc",
       },

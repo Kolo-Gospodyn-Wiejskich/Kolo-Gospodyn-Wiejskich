@@ -1,4 +1,6 @@
-import { type Competiton } from "@prisma/client";
+import { type Competiton as CompetitionType } from "@prisma/client";
+import { format } from "date-fns";
+import { pl } from "date-fns/locale";
 import Image from "next/image";
 import Link from "next/link";
 import { type CSSProperties, useEffect, useState } from "react";
@@ -117,23 +119,30 @@ function CompetitionList() {
   );
 }
 
-type CompetitionProps = Pick<Competiton, "id" | "name" | "imageUrl">;
-
-function Competition({ id, name, imageUrl }: CompetitionProps) {
+function Competition({
+  id,
+  name,
+  imageUrl,
+  startsAt,
+  endsAt,
+}: CompetitionType) {
   const { data: activeCompetition } = api.competition.getActive.useQuery();
+
+  const formattedFrom = format(startsAt, "dd MMM", { locale: pl });
+  const formattedTo = format(endsAt, "dd MMM", { locale: pl });
 
   return (
     <Link
       href={`/competition/${id}`}
       className={cn(
-        "flex h-56 w-56 items-center justify-center rounded-xl bg-base-200 p-4 transition-[filter] hover:brightness-75",
+        "flex h-fit w-56 flex-col items-center justify-start gap-3 rounded-xl bg-base-200 p-4 transition-[filter] hover:brightness-75",
         {
           "border-4 border-secondary":
             id === activeCompetition?.competition?.id,
         },
       )}
     >
-      <div className="relative z-40 flex h-full w-full items-center justify-center rounded-xl bg-black bg-opacity-60 text-xl font-semibold">
+      <div className="relative z-40 flex aspect-square w-full items-center justify-center rounded-xl bg-black bg-opacity-60 text-xl font-bold">
         <Image
           src={imageUrl}
           alt={`Zdjęcie przedstawiające ${name}`}
@@ -144,6 +153,11 @@ function Competition({ id, name, imageUrl }: CompetitionProps) {
         <div className="z-50 overflow-hidden text-ellipsis p-4 text-center text-white">
           {name}
         </div>
+      </div>
+      <div className="flex gap-3 text-center text-xl font-semibold opacity-90">
+        <span>{formattedFrom}</span>
+        <span>-</span>
+        <span>{formattedTo}</span>
       </div>
     </Link>
   );
