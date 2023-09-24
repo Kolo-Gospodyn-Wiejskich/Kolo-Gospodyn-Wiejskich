@@ -82,11 +82,11 @@ export default function CompetitionPage({
       </div>
     );
 
-  const formattedDateFrom = format(competition.startsAt, "dd LLL y", {
+  const formattedFrom = format(competition.startsAt, "dd LLL y", {
     locale: pl,
   });
 
-  const formattedDateTo = format(competition.endsAt, "dd LLL y", {
+  const formattedTo = format(competition.endsAt, "dd LLL y", {
     locale: pl,
   });
 
@@ -96,9 +96,9 @@ export default function CompetitionPage({
         {competition.name}
       </h1>
       <p className="flex gap-4 text-center text-xl font-semibold">
-        <span>{formattedDateFrom}</span>
+        <span>{formattedFrom}</span>
         <span>-</span>
-        <span>{formattedDateTo}</span>
+        <span>{formattedTo}</span>
       </p>
     </div>
   );
