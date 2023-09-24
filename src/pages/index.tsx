@@ -53,12 +53,12 @@ function ActiveCompetition() {
   }
 
   return (
-    <div className="w-full space-y-4 text-center text-4xl">
-      <p>
-        <span>Konkurencja </span>
+    <div className="flex flex-col items-center gap-4 text-center text-4xl">
+      <p className="flex w-[80vw] flex-wrap justify-center gap-3">
+        <span>Konkurencja</span>
         <Link
           href={`/competition/${competition.id}`}
-          className="link-secondary link block overflow-hidden text-ellipsis font-semibold"
+          className="link-secondary link overflow-hidden text-ellipsis font-semibold"
         >
           {competition.name}
         </Link>
