@@ -12,7 +12,7 @@ export function Navbar() {
   const { status: sessionStatus } = useSession();
 
   return (
-    <nav className="navbar flex-col gap-2 md:flex-row">
+    <nav className="navbar flex-col gap-2 lg:flex-row">
       <div className="flex-1">
         <Link href={"/"} className="btn btn-ghost text-2xl normal-case">
           <span className="text-primary">Koło</span>{" "}
@@ -20,7 +20,7 @@ export function Navbar() {
           <span className="text-accent">Wiejskich</span>
         </Link>
       </div>
-      <div className="flex flex-col gap-2 md:flex-row md:gap-4">
+      <div className="flex flex-col gap-2 lg:flex-row lg:gap-4">
         {sessionStatus === "authenticated" && (
           <>
             <AddEntryButton type="nav" />
