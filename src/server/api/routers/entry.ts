@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -32,12 +33,33 @@ export const entryRouter = createTRPCRouter({
         },
       });
     }),
-  addNew: protectedProcedure.input(entrySchema).mutation(({ input, ctx }) => {
-    return ctx.prisma.entry.create({
-      data: {
-        ...input,
-        authorId: ctx.session.user.id,
-      },
-    });
-  }),
+  addNew: protectedProcedure
+    .input(entrySchema)
+    .mutation(async ({ input, ctx }) => {
+      // TODO: maybe use query
+      const activeCompetition = await ctx.prisma.competiton.findFirst({
+        where: {
+          startsAt: {
+            lte: new Date(),
+          },
+          endsAt: {
+            gte: new Date(),
+          },
+        },
+      });
+
+      if (!activeCompetition)
+        throw new TRPCError({
+          message: "Brak aktywnej konkurencji",
+          code: "FORBIDDEN",
+        });
+
+      return ctx.prisma.entry.create({
+        data: {
+          ...input,
+          competitionId: activeCompetition.id,
+          authorId: ctx.session.user.id,
+        },
+      });
+    }),
 });

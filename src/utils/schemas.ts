@@ -35,7 +35,6 @@ export const competitionSchema = z.object({
 });
 
 export const entrySchema = z.object({
-  competitionId: z.string({ required_error: "Konkurencja jest wymagana" }),
   description: z
     .string()
     .max(255, "Opis musi zawierać najwyżej 255 znaków")
