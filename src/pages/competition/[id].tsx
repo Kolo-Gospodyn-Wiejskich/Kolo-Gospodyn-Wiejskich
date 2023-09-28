@@ -1,17 +1,21 @@
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import {
   type GetStaticPaths,
   type GetStaticPropsContext,
   type InferGetStaticPropsType,
 } from "next";
+import { useEffect } from "react";
 import superjson from "superjson";
 import { AddEntryButton } from "~/components/addEntryButton";
 import { type LayoutProps } from "~/components/layout";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import { api } from "~/utils/api";
+
+const competitionIdAtom = atom<string | null>(null);
 
 export async function getStaticProps(
   context: GetStaticPropsContext<{ id: string }>,
@@ -63,12 +67,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export default function CompetitionPage({
   id,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const setCompetitionId = useSetAtom(competitionIdAtom);
+
+  useEffect(() => {
+    setCompetitionId(id);
+    return () => setCompetitionId(null);
+  }, [id, setCompetitionId]);
+
   const {
     data: competition,
     isLoading,
     error,
   } = api.competition.getById.useQuery({ id });
 
+  // actually its never loading because its preetched in static props
   if (isLoading)
     return (
       <span className="loading loading-dots loading-lg mt-6 text-accent" />
@@ -99,7 +111,34 @@ export default function CompetitionPage({
         <span>-</span>
         <span>{formattedTo}</span>
       </p>
-      <AddEntryButton type="page" />
+      <CompetitionPageFeed />
     </div>
+  );
+}
+
+function CompetitionPageFeed() {
+  const competitionId = useAtomValue(competitionIdAtom);
+
+  const { data, isLoading, error } = api.competition.getActive.useQuery();
+
+  // actually its never loading because its preetched in static props
+  if (isLoading)
+    return (
+      <span className="loading loading-dots loading-lg mt-6 text-accent" />
+    );
+
+  if (error)
+    return (
+      <div className="alert alert-error max-w-fit text-4xl">
+        Error loading feed: {error.message}
+      </div>
+    );
+
+  if (data.isActive && data.competition.id !== competitionId) return null;
+
+  return (
+    <>
+      <AddEntryButton type="page" />
+    </>
   );
 }
