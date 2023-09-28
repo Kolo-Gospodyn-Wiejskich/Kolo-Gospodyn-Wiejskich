@@ -21,7 +21,7 @@ export async function getStaticProps(
     transformer: superjson,
   });
 
-  // cast as unknown to make ts-config happy
+  // cast as unknown to make ts happy
   const id = context.params?.id as unknown as string;
 
   const competition = await helpers.competition.getById.fetch({
@@ -33,10 +33,8 @@ export async function getStaticProps(
       trpcState: helpers.dehydrate(),
       id,
       layout: {
-        title: competition ? competition.name : "Konkurencja",
-        description: `Konkurencja${
-          competition ? ` ${competition.name}` : ""
-        } Koła Gospodyń Wiejskich`,
+        title: competition.name,
+        description: `Konkurencja ${competition.name} Koła Gospodyń Wiejskich`,
         centeredVertically: false,
       } satisfies LayoutProps,
     },
