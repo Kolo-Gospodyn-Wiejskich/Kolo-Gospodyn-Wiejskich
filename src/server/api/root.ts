@@ -1,8 +1,8 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { userRouter } from "./routers/user";
 import { competitionRouter } from "./routers/competition";
-import { entryRouter } from "./routers/entryRouter";
-import { ratingRouter } from "./routers/ratingRouter";
+import { entryRouter } from "./routers/entry";
+import { ratingRouter } from "./routers/rating";
 
 /**
  * This is the primary router for your server.
