@@ -15,7 +15,7 @@ export const userRouter = createTRPCRouter({
           code: "FORBIDDEN",
         });
 
-      return { status: "ok" };
+      return { status: "ok" } as const;
     }),
   signUp: publicProcedure
     .input(signUpSchema)

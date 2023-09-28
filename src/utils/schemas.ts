@@ -33,3 +33,29 @@ export const competitionSchema = z.object({
   }),
   endsAt: z.date({ required_error: "Koniec przedziału czasu jest wymagany" }),
 });
+
+export const entrySchema = z.object({
+  competitionId: z.string({ required_error: "Konkurencja jest wymagana" }),
+  description: z
+    .string()
+    .max(255, "Opis musi zawierać najwyżej 255 znaków")
+    .optional(),
+  imageUrl: z.string().url(),
+});
+
+const MAX_POINTS_TASTE = 5;
+const MAX_POINTS_APPEARANCE = 3;
+const MAX_POINTS_NUTRITION = 2;
+
+export const ratingSchema = z
+  .object({
+    entryId: z.string(),
+    type: z.enum(["TASTE", "APPEARANCE", "NUTRITION"]),
+    value: z.number().min(0),
+  })
+  .refine(
+    ({ type, value }) =>
+      (type === "TASTE" && value <= MAX_POINTS_TASTE) ||
+      (type === "APPEARANCE" && value <= MAX_POINTS_APPEARANCE) ||
+      (type === "NUTRITION" && value <= MAX_POINTS_NUTRITION),
+  );

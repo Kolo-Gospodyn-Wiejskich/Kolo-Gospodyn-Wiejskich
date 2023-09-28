@@ -25,10 +25,10 @@ model Competiton {
 }
 
 model Entry {
-    id            String @id @default(cuid())
+    id            String  @id @default(cuid())
     authorId      String
     competitionId String
-    description   String
+    description   String?
     imageUrl      String
 
     ratings Rating[]
@@ -39,16 +39,23 @@ model Entry {
     @@unique([authorId, competitionId])
 }
 
+enum RatingType {
+    TASTE
+    APPEARANCE
+    NUTRITION
+}
+
 model Rating {
-    id         String @id @default(cuid())
-    authorId   String
-    entryId    String
-    taste      Int
-    appearance Int
-    nutrition  Int
+    id       String     @id @default(cuid())
+    authorId String
+    entryId  String
+    type     RatingType
+    value    Int
 
     entry  Entry @relation(fields: [entryId], references: [id])
     author User  @relation(fields: [authorId], references: [id])
+
+    @@unique([authorId, entryId, type])
 }
 
 model User {
