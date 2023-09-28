@@ -67,12 +67,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export default function CompetitionPage({
   id,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const setCompetitionId = useSetAtom(competitionIdAtom);
-
-  useEffect(() => {
-    setCompetitionId(id);
-    return () => setCompetitionId(null);
-  }, [id, setCompetitionId]);
+  useSetAndResetCompetitonIdAtom(id);
 
   const {
     data: competition,
@@ -134,7 +129,7 @@ function CompetitionPageFeed() {
       </div>
     );
 
-  if (data.isActive && data.competition.id !== competitionId) return null;
+  if (!data.isActive || data.competition.id !== competitionId) return null;
 
   return (
     <>
@@ -142,3 +137,12 @@ function CompetitionPageFeed() {
     </>
   );
 }
+
+const useSetAndResetCompetitonIdAtom = (id: string) => {
+  const setCompetitionId = useSetAtom(competitionIdAtom);
+
+  useEffect(() => {
+    setCompetitionId(id);
+    return () => setCompetitionId(null);
+  }, [id, setCompetitionId]);
+};

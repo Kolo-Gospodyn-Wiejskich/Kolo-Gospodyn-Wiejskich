@@ -16,7 +16,7 @@ export function getStaticProps() {
   };
 }
 
-export default function AddEntry() {
+export default function AddEntryPage() {
   const { isUnauthed } = useProtectedPage();
   const router = useRouter();
   const utils = api.useContext();

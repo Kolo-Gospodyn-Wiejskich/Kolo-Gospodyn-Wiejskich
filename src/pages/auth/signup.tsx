@@ -1,10 +1,10 @@
-import { atom, useAtom } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { type LayoutProps } from "~/components/layout";
 import { secretCodeSchema, signUpSchema } from "~/utils/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "~/utils/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { cn } from "~/utils/tailwind-merge";
 import toast from "react-hot-toast";
@@ -24,8 +24,12 @@ export function getStaticProps() {
   };
 }
 
-export default function SignUp() {
-  const [isCorrectSecretCodeEntered] = useAtom(isCorrectSecretCodeEnteredAtom);
+export default function SignUpPage() {
+  useResetIsCorrectSecretCodeEnteredAtom();
+
+  const isCorrectSecretCodeEntered = useAtomValue(
+    isCorrectSecretCodeEnteredAtom,
+  );
 
   return (
     <div className="container flex h-full flex-col items-center justify-center gap-6">
@@ -40,7 +44,7 @@ function SecretCodeForm() {
   const [customIsLoading, setCustomIsLoading] = useState(false);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, setIsCorrectSecretCodeEntered] = useAtom(
+  const setIsCorrectSecretCodeEntered = useSetAtom(
     isCorrectSecretCodeEnteredAtom,
   );
 
@@ -283,3 +287,14 @@ function SignUpForm() {
     </div>
   );
 }
+
+const useResetIsCorrectSecretCodeEnteredAtom = () => {
+  const setIsCorrectSecretCodeEntered = useSetAtom(
+    isCorrectSecretCodeEnteredAtom,
+  );
+
+  useEffect(
+    () => () => setIsCorrectSecretCodeEntered(false),
+    [setIsCorrectSecretCodeEntered],
+  );
+};

@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { atom, useAtomValue } from "jotai";
+import { atom, useAtom, useSetAtom } from "jotai";
 import { useRouter } from "next/router";
 import { type ChangeEvent, useEffect, useState } from "react";
 import { type DateRange } from "react-day-picker";
@@ -34,7 +34,6 @@ export function getStaticProps() {
 }
 
 export const dateRangeAtom = atom<DateRange | undefined>(undefined);
-export const imageUrlAtom = atom<string | null>(null);
 
 const formSchema = competitionSchema.omit({ imageUrl: true }).extend({
   imageFile: z.custom<File>((file) => file instanceof File, {
@@ -44,7 +43,9 @@ const formSchema = competitionSchema.omit({ imageUrl: true }).extend({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-export default function AddCompetition() {
+export default function AddCompetitionPage() {
+  useResetDateRangeAtom();
+
   const [customIsLoading, setCustomIsLoading] = useState(false);
   const [imgUploadPercent, setImgUploadPercent] = useState(0);
   const router = useRouter();
@@ -281,7 +282,7 @@ const useSyncFormStateToDateRangePicker = ({
   isSubmitted: UseFormStateReturn<FormSchema>["isSubmitted"];
   trigger: UseFormTrigger<FormSchema>;
 }) => {
-  const dateRangeValue = useAtomValue(dateRangeAtom);
+  const [dateRangeValue, setDateRange] = useAtom(dateRangeAtom);
 
   useEffect(() => {
     if (!dateRangeValue) {
@@ -311,5 +312,18 @@ const useSyncFormStateToDateRangePicker = ({
       void trigger("startsAt");
       void trigger("endsAt");
     }
-  }, [dateRangeValue, setValue, reset, getValues, isSubmitted, trigger]);
+  }, [
+    dateRangeValue,
+    setDateRange,
+    reset,
+    getValues,
+    isSubmitted,
+    trigger,
+    setValue,
+  ]);
+};
+
+const useResetDateRangeAtom = () => {
+  const setDateRange = useSetAtom(dateRangeAtom);
+  useEffect(() => () => setDateRange(undefined), [setDateRange]);
 };

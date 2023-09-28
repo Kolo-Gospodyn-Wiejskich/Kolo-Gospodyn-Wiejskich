@@ -21,7 +21,7 @@ export function getStaticProps() {
   };
 }
 
-export default function LogIn() {
+export default function LogInPage() {
   const [customIsLoading, setCustomIsLoading] = useState(false);
   const router = useRouter();
 
