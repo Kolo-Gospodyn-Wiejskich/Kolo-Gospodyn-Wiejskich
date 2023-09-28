@@ -15,6 +15,7 @@ export const entryRouter = createTRPCRouter({
         where: {
           competitionId: input.id,
         },
+        take: 100,
       });
     }),
   getAllWithRatingsByCompetitionId: protectedProcedure
@@ -31,6 +32,7 @@ export const entryRouter = createTRPCRouter({
             },
           },
         },
+        take: 100,
       });
     }),
   addNew: protectedProcedure
@@ -54,12 +56,14 @@ export const entryRouter = createTRPCRouter({
           code: "FORBIDDEN",
         });
 
-      return ctx.prisma.entry.create({
+      await ctx.prisma.entry.create({
         data: {
           ...input,
           competitionId: activeCompetition.id,
           authorId: ctx.session.user.id,
         },
       });
+
+      return { competitionId: activeCompetition.id };
     }),
 });

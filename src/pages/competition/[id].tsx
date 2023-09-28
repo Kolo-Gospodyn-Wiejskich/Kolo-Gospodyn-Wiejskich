@@ -7,6 +7,7 @@ import {
   type InferGetStaticPropsType,
 } from "next";
 import superjson from "superjson";
+import { AddEntryButton } from "~/components/addEntryButton";
 import { type LayoutProps } from "~/components/layout";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
@@ -98,6 +99,7 @@ export default function CompetitionPage({
         <span>-</span>
         <span>{formattedTo}</span>
       </p>
+      <AddEntryButton type="page" />
     </div>
   );
 }

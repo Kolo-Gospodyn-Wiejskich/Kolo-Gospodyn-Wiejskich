@@ -6,6 +6,7 @@ import {
   PersonIcon,
   PlusIcon,
 } from "@radix-ui/react-icons";
+import { AddEntryButton } from "./addEntryButton";
 
 export function Navbar() {
   const { status: sessionStatus } = useSession();
@@ -22,6 +23,7 @@ export function Navbar() {
       <div className="flex flex-col gap-2 md:flex-row md:gap-4">
         {sessionStatus === "authenticated" && (
           <>
+            <AddEntryButton type="nav" />
             <Link
               href={"/add-competition"}
               role="button"
