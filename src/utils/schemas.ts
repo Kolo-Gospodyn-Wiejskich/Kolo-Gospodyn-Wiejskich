@@ -35,6 +35,10 @@ export const competitionSchema = z.object({
 });
 
 export const entrySchema = z.object({
+  title: z
+    .string()
+    .min(1, "Tytuł nie może być pusty")
+    .max(50, "Tytuł musi zawierać najwyżej 50 znaków"),
   description: z
     .string()
     .max(255, "Opis musi zawierać najwyżej 255 znaków")

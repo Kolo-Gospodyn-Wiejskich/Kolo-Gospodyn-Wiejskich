@@ -28,6 +28,7 @@ model Entry {
     id            String  @id @default(cuid())
     authorId      String
     competitionId String
+    title         String
     description   String?
     imageUrl      String
 
