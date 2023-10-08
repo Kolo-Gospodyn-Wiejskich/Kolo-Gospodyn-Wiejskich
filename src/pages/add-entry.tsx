@@ -17,7 +17,6 @@ export function getStaticProps() {
 }
 
 export default function AddEntryPage() {
-  const { isUnauthed } = useProtectedPage();
   const router = useRouter();
   const utils = api.useContext();
 
@@ -41,6 +40,7 @@ export default function AddEntryPage() {
     },
   });
 
+  const { isUnauthed } = useProtectedPage();
   if (isUnauthed) return null;
 
   if (error)
