@@ -67,8 +67,9 @@ export default function AddCompetitionPage() {
         setError("startsAt", { type: "server", message: error.message });
         setError("endsAt", { type: "server", message: error.message });
       } else {
-        toast.error("Server error, please try again");
+        toast.error("Błąd serwera, spróbuj ponownie");
       }
+      setImgUploadPercent(0);
       setCustomIsLoading(false);
     },
   });
@@ -108,11 +109,12 @@ export default function AddCompetitionPage() {
   });
 
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
-    "competitionImageUploader",
+    "imageUploader",
     {
       onUploadProgress: setImgUploadPercent,
       onUploadError: (error) => {
         setError("imageFile", { type: "server", message: error.message });
+        setImgUploadPercent(0);
         setCustomIsLoading(false);
       },
     },
@@ -138,8 +140,6 @@ export default function AddCompetitionPage() {
       endsAt: correctEndsAt,
       imageUrl: res[0].url,
     };
-
-    console.log(finalData);
 
     addCompetition(finalData);
   };

@@ -53,7 +53,7 @@ export const entryRouter = createTRPCRouter({
       if (!activeCompetition)
         throw new TRPCError({
           message: "Brak aktywnej konkurencji",
-          code: "FORBIDDEN",
+          code: "BAD_REQUEST",
         });
 
       await ctx.prisma.entry.create({

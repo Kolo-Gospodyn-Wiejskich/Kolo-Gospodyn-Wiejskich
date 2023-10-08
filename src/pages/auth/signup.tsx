@@ -139,7 +139,7 @@ function SignUpForm() {
       });
 
       if (result?.error) {
-        toast.error("Server error, please try again");
+        toast.error("Błąd serwera, spróbuj ponownie");
         setCustomIsLoading(false);
       }
       if (result?.ok) await router.push("/");
@@ -149,7 +149,7 @@ function SignUpForm() {
         setError("firstName", { type: "server", message: error.message });
         setError("lastName", { type: "server", message: error.message });
       } else {
-        toast.error("Server error, please try again");
+        toast.error("Błąd serwera, spróbuj ponownie");
       }
 
       setCustomIsLoading(false);
