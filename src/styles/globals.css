@@ -12,3 +12,9 @@
     /* font-family: "Karla", sans-serif; */
   }
 }
+
+@layer components {
+  .rating:not(:has(input:checked)) input {
+    --tw-bg-opacity: 0.2;
+  }
+}

@@ -15,6 +15,9 @@ export const entryRouter = createTRPCRouter({
         where: {
           competitionId: input.id,
         },
+        include: {
+          author: true,
+        },
         take: 100,
       });
     }),
@@ -30,7 +33,12 @@ export const entryRouter = createTRPCRouter({
             where: {
               authorId: ctx.session.user.id,
             },
+            select: {
+              type: true,
+              value: true,
+            },
           },
+          author: true,
         },
         take: 100,
       });
