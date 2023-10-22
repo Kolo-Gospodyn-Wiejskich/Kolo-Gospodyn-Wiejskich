@@ -46,9 +46,9 @@ export const entrySchema = z.object({
   imageUrl: z.string().url(),
 });
 
-const MAX_POINTS_TASTE = 5;
-const MAX_POINTS_APPEARANCE = 3;
-const MAX_POINTS_NUTRITION = 2;
+export const MAX_POINTS_TASTE = 5;
+export const MAX_POINTS_APPEARANCE = 4;
+export const MAX_POINTS_NUTRITION = 3;
 
 export const ratingSchema = z
   .object({

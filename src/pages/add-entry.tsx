@@ -59,7 +59,7 @@ export default function AddEntryPage() {
         utils.entry.getAllWithRatingsByCompetitionId.invalidate({
           id: competitionId,
         }),
-        utils.entry.getAllForUnauthedByCompetitionId.invalidate({
+        utils.entry.getAllWithoutRatingsByCompetitionId.invalidate({
           id: competitionId,
         }),
       ]);
@@ -111,8 +111,6 @@ export default function AddEntryPage() {
       ...dataWithNoFile,
       imageUrl: res[0].url,
     };
-
-    console.log(finalData);
 
     addNewEntry(finalData);
   };

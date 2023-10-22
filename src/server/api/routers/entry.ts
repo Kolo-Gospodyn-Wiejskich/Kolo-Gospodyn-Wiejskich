@@ -8,15 +8,24 @@ import {
 import { entrySchema } from "~/utils/schemas";
 
 export const entryRouter = createTRPCRouter({
-  getAllForUnauthedByCompetitionId: publicProcedure
+  getAllWithoutRatingsByCompetitionId: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(({ input, ctx }) => {
       return ctx.prisma.entry.findMany({
         where: {
           competitionId: input.id,
         },
-        include: {
-          author: true,
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          imageUrl: true,
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
         take: 100,
       });
@@ -38,7 +47,12 @@ export const entryRouter = createTRPCRouter({
               value: true,
             },
           },
-          author: true,
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+            },
+          },
         },
         take: 100,
       });

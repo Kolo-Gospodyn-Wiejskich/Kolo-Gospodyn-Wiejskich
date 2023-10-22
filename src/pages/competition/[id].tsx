@@ -1,6 +1,7 @@
+import { type Rating } from "@prisma/client";
 import { AvatarIcon } from "@radix-ui/react-icons";
 import { createServerSideHelpers } from "@trpc/react-query/server";
-import { inferProcedureOutput } from "@trpc/server";
+import { type inferProcedureOutput } from "@trpc/server";
 import { format } from "date-fns";
 import { pl } from "date-fns/locale";
 import { atom, useAtomValue, useSetAtom } from "jotai";
@@ -11,13 +12,19 @@ import {
 } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { ChangeEvent, FormEvent, useEffect } from "react";
+import { type ChangeEvent, useEffect } from "react";
 import superjson from "superjson";
 import { AddEntryButton } from "~/components/addEntryButton";
 import { type LayoutProps } from "~/components/layout";
-import { AppRouter, appRouter } from "~/server/api/root";
+import { type AppRouter, appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import { api } from "~/utils/api";
+import {
+  MAX_POINTS_APPEARANCE,
+  MAX_POINTS_NUTRITION,
+  MAX_POINTS_TASTE,
+} from "~/utils/schemas";
+import { cn } from "~/utils/tailwind-merge";
 
 const competitionIdAtom = atom<string | null>(null);
 
@@ -176,9 +183,9 @@ function AuthedEntryFeed() {
       {isThisCompetitionActive && <AddEntryButton type="page" />}
       {data.map((authedEntry) =>
         authedEntry.authorId === sessionData?.user.id ? (
-          <UnauthedEntry key={authedEntry.id} {...authedEntry} />
+          <EntryWithoutRatings key={authedEntry.id} {...authedEntry} />
         ) : (
-          <AuthedEntry
+          <EntryWithRatings
             key={authedEntry.id}
             isActive={isThisCompetitionActive}
             {...authedEntry}
@@ -193,7 +200,7 @@ function UnauthedEntryFeed() {
   const competitionId = useAtomValue(competitionIdAtom);
 
   const { data, isLoading, error } =
-    api.entry.getAllForUnauthedByCompetitionId.useQuery(
+    api.entry.getAllWithoutRatingsByCompetitionId.useQuery(
       {
         id: competitionId!,
       },
@@ -215,23 +222,23 @@ function UnauthedEntryFeed() {
   return (
     <div className="flex flex-col items-center gap-8">
       {data.map((unauthedEntry) => (
-        <UnauthedEntry key={unauthedEntry.id} {...unauthedEntry} />
+        <EntryWithoutRatings key={unauthedEntry.id} {...unauthedEntry} />
       ))}
     </div>
   );
 }
 
-type AuthedEntryProps = {
+type EntryWithRatingsProps = {
   isActive: boolean;
 } & inferProcedureOutput<
   AppRouter["entry"]["getAllWithRatingsByCompetitionId"]
 >[number];
 
-type UnauthedEntryProps = inferProcedureOutput<
-  AppRouter["entry"]["getAllForUnauthedByCompetitionId"]
+type EntryWithoutRatingsProps = inferProcedureOutput<
+  AppRouter["entry"]["getAllWithoutRatingsByCompetitionId"]
 >[number];
 
-function AuthedEntry({
+function EntryWithRatings({
   isActive,
   id,
   author,
@@ -240,10 +247,49 @@ function AuthedEntry({
   description,
   imageUrl,
   ratings,
-}: AuthedEntryProps) {
-  const utils = api.useContext();
+}: EntryWithRatingsProps) {
+  return (
+    <div className="card card-bordered w-[80vw] border-8 border-base-200 bg-base-200 bg-opacity-30 sm:w-[28rem] md:w-[36rem]">
+      {/* TODO: pick correct width and height */}
+      <figure className="rounded-t-lg">
+        <Image src={imageUrl} alt={title} width={700} height={700} />
+      </figure>
+      <div className="card-body">
+        <h2 className="card-title block overflow-hidden text-ellipsis">
+          {title}
+        </h2>
+        <span className="flex items-center gap-2 opacity-75">
+          <AvatarIcon className="h-6 w-6" />
+          <span>
+            {author.firstName} {author.lastName}
+          </span>
+        </span>
+        <p>{description}</p>
+        <Ratings
+          ratings={ratings}
+          competitionId={competitionId}
+          entryId={id}
+          isCompetitionActive={isActive}
+        />
+      </div>
+    </div>
+  );
+}
 
-  console.log({ ratings });
+interface RatingsProps {
+  ratings: Pick<Rating, "type" | "value">[];
+  competitionId: string;
+  entryId: string;
+  isCompetitionActive: boolean;
+}
+
+function Ratings({
+  ratings,
+  competitionId,
+  entryId,
+  isCompetitionActive,
+}: RatingsProps) {
+  const utils = api.useContext();
 
   const { mutate: addRating } = api.rating.addNew.useMutation({
     onSuccess: async () => {
@@ -258,7 +304,7 @@ function AuthedEntry({
     e: ChangeEvent<HTMLInputElement>,
   ) => {
     const value = parseInt(e.target.value);
-    addRating({ entryId: id, type, value });
+    addRating({ entryId, type, value });
   };
 
   const shouldBeChecked = (
@@ -270,142 +316,122 @@ function AuthedEntry({
     );
   };
 
+  const numberRangeTo = (number: number) => [...Array(number).keys()];
+
   return (
-    <div className="card card-bordered w-[80vw] border-8 border-base-200 bg-base-200 bg-opacity-30 sm:w-[28rem] md:w-[36rem]">
-      {/* TODO: pick correct width and height */}
-      <figure className="rounded-t-lg">
-        <Image src={imageUrl} alt={title} width={700} height={700} />
-      </figure>
-      <div className="card-body">
-        <h2 className="card-title">{title}</h2>
-        <span className="flex items-center gap-2 opacity-75">
-          <AvatarIcon className="h-6 w-6" />
-          <span>
-            {author.firstName} {author.lastName}
-          </span>
-        </span>
-        <p>{description}</p>
-        <div className="card-actions mt-4 flex-col items-stretch justify-around gap-4 md:flex-row">
-          <div className="flex flex-1 flex-col items-center rounded-xl bg-base-300 px-4 py-2 text-center text-secondary">
-            <span className="font-semibold">Smak</span>
-            <div
-              className="rating"
-              onChange={(e) =>
-                handleRatingChange("TASTE", e as ChangeEvent<HTMLInputElement>)
-              }
-            >
-              <input
-                type="radio"
-                name="TASTE"
-                value={1}
-                defaultChecked={shouldBeChecked("TASTE", 1)}
-                className="mask mask-star bg-secondary brightness-50"
-              />
-              <input
-                type="radio"
-                name="TASTE"
-                value={2}
-                defaultChecked={shouldBeChecked("TASTE", 2)}
-                className="mask mask-star bg-secondary brightness-50"
-              />
-              <input
-                type="radio"
-                name="TASTE"
-                value={3}
-                defaultChecked={shouldBeChecked("TASTE", 3)}
-                className="mask mask-star bg-secondary brightness-50"
-              />
-              <input
-                type="radio"
-                name="TASTE"
-                value={4}
-                defaultChecked={shouldBeChecked("TASTE", 4)}
-                className="mask mask-star bg-secondary brightness-50"
-              />
-              <input
-                type="radio"
-                name="TASTE"
-                value={5}
-                defaultChecked={shouldBeChecked("TASTE", 5)}
-                className="mask mask-star bg-secondary brightness-50"
-              />
-            </div>
-          </div>
-          <div className="flex flex-1 flex-col items-center rounded-xl bg-base-300 px-4 py-2 text-center text-accent">
-            <span className="font-semibold">Wygląd</span>
-            <div
-              className="rating"
-              onChange={(e) =>
-                handleRatingChange(
-                  "APPEARANCE",
-                  e as ChangeEvent<HTMLInputElement>,
-                )
-              }
-            >
-              <input
-                type="radio"
-                name="APPEARANCE"
-                value={1}
-                defaultChecked={shouldBeChecked("APPEARANCE", 1)}
-                className="mask mask-star bg-accent brightness-50"
-              />
-              <input
-                type="radio"
-                name="APPEARANCE"
-                value={2}
-                defaultChecked={shouldBeChecked("APPEARANCE", 2)}
-                className="mask mask-star bg-accent brightness-50"
-              />
-              <input
-                type="radio"
-                name="APPEARANCE"
-                value={3}
-                defaultChecked={shouldBeChecked("APPEARANCE", 3)}
-                className="mask mask-star bg-accent brightness-50"
-              />
-            </div>
-          </div>
-          <div className="flex flex-1 flex-col items-center rounded-xl bg-base-300 px-4 py-2 text-center text-primary">
-            <span className="font-semibold">Odżywczość</span>
-            <div
-              className="rating"
-              onChange={(e) =>
-                handleRatingChange(
-                  "NUTRITION",
-                  e as ChangeEvent<HTMLInputElement>,
-                )
-              }
-            >
-              <input
-                type="radio"
-                name="NUTRITION"
-                value={1}
-                defaultChecked={shouldBeChecked("NUTRITION", 1)}
-                className="mask mask-star bg-primary brightness-50"
-              />
-              <input
-                type="radio"
-                name="NUTRITION"
-                value={2}
-                defaultChecked={shouldBeChecked("NUTRITION", 2)}
-                className="mask mask-star bg-primary brightness-50"
-              />
-            </div>
-          </div>
+    <div className="card-actions mt-4 flex-col items-stretch justify-around gap-4 md:flex-row">
+      <div
+        className={cn(
+          "flex flex-1 flex-col items-center rounded-xl bg-base-300 px-4 py-2 text-center text-secondary",
+          { "brightness-75": !isCompetitionActive },
+        )}
+      >
+        <span className="font-semibold">Smak</span>
+        <div
+          className="rating"
+          onChange={
+            isCompetitionActive
+              ? (e) =>
+                  handleRatingChange(
+                    "TASTE",
+                    e as ChangeEvent<HTMLInputElement>,
+                  )
+              : () => undefined
+          }
+        >
+          {numberRangeTo(MAX_POINTS_TASTE).map((value) => (
+            <input
+              key={value}
+              disabled={!isCompetitionActive}
+              type="radio"
+              name={`${entryId}-TASTE`}
+              value={value}
+              defaultChecked={shouldBeChecked("TASTE", value)}
+              className={cn("mask mask-star bg-secondary brightness-50", {
+                "cursor-not-allowed": !isCompetitionActive,
+              })}
+            />
+          ))}
+        </div>
+      </div>
+      <div
+        className={cn(
+          "flex flex-1 flex-col items-center rounded-xl bg-base-300 px-4 py-2 text-center text-accent",
+          { "brightness-75": !isCompetitionActive },
+        )}
+      >
+        <span className="font-semibold">Wygląd</span>
+        <div
+          className="rating"
+          onChange={
+            isCompetitionActive
+              ? (e) =>
+                  handleRatingChange(
+                    "APPEARANCE",
+                    e as ChangeEvent<HTMLInputElement>,
+                  )
+              : () => undefined
+          }
+        >
+          {numberRangeTo(MAX_POINTS_APPEARANCE).map((value) => (
+            <input
+              key={value}
+              disabled={!isCompetitionActive}
+              type="radio"
+              name={`${entryId}-APPEARANCE`}
+              value={value}
+              defaultChecked={shouldBeChecked("APPEARANCE", value)}
+              className={cn("mask mask-star bg-accent brightness-50", {
+                "cursor-not-allowed": !isCompetitionActive,
+              })}
+            />
+          ))}
+        </div>
+      </div>
+      <div
+        className={cn(
+          "flex flex-1 flex-col items-center rounded-xl bg-base-300 px-4 py-2 text-center text-primary",
+          { "brightness-75": !isCompetitionActive },
+        )}
+      >
+        <span className="font-semibold">Odżywczość</span>
+        <div
+          className="rating"
+          onChange={
+            isCompetitionActive
+              ? (e) =>
+                  handleRatingChange(
+                    "NUTRITION",
+                    e as ChangeEvent<HTMLInputElement>,
+                  )
+              : () => undefined
+          }
+        >
+          {numberRangeTo(MAX_POINTS_NUTRITION).map((value) => (
+            <input
+              key={value}
+              disabled={!isCompetitionActive}
+              type="radio"
+              name={`${entryId}-NUTRITION`}
+              value={value}
+              defaultChecked={shouldBeChecked("NUTRITION", value)}
+              className={cn("mask mask-star bg-primary brightness-50", {
+                "cursor-not-allowed": !isCompetitionActive,
+              })}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-function UnauthedEntry({
-  id,
+function EntryWithoutRatings({
   author,
-  competitionId,
   title,
   description,
   imageUrl,
-}: UnauthedEntryProps) {
+}: EntryWithoutRatingsProps) {
   return (
     <div className="card card-bordered w-[80vw] border-8 border-base-200 bg-base-200 bg-opacity-30 sm:w-[28rem] md:w-[36rem]">
       {/* TODO: pick correct width and height */}
@@ -413,14 +439,18 @@ function UnauthedEntry({
         <Image src={imageUrl} alt={title} width={700} height={700} />
       </figure>
       <div className="card-body">
-        <h2 className="card-title">{title}</h2>
+        <h2 className="card-title block overflow-hidden text-ellipsis">
+          {title}
+        </h2>
         <span className="flex items-center gap-2 opacity-75">
           <AvatarIcon className="h-6 w-6" />
           <span>
             {author.firstName} {author.lastName}
           </span>
         </span>
-        <p>{description}</p>
+        {!!description && (
+          <p className="overflow-hidden text-ellipsis">{description}</p>
+        )}
       </div>
     </div>
   );

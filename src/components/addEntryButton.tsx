@@ -29,7 +29,7 @@ const useCanUserAddEntry = () => {
 
   const { data: activeCompetion } = api.competition.getActive.useQuery();
   const { data: activeCompetitionEntries } =
-    api.entry.getAllForUnauthedByCompetitionId.useQuery(
+    api.entry.getAllWithoutRatingsByCompetitionId.useQuery(
       // cast to unknown first to make ts happy
       { id: activeCompetion?.competition?.id as unknown as string },
       { enabled: !!activeCompetion?.competition?.id },
