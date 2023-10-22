@@ -20,6 +20,7 @@ export const entryRouter = createTRPCRouter({
           title: true,
           description: true,
           imageUrl: true,
+          authorId: true,
           author: {
             select: {
               firstName: true,
