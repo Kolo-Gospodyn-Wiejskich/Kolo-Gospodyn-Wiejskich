@@ -17,4 +17,29 @@
   .rating:not(:has(input:checked)) input {
     --tw-bg-opacity: 0.2;
   }
+
+  .rating input:not(:disabled):not(:checked):hover {
+    filter: brightness(1.1);
+    --tw-bg-opacity: 0.75;
+  }
+
+  @keyframes overlayShow {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes contentShow {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
 }

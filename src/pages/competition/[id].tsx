@@ -1,4 +1,5 @@
 import { type Rating } from "@prisma/client";
+import * as Dialog from "@radix-ui/react-dialog";
 import { AvatarIcon } from "@radix-ui/react-icons";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { type inferProcedureOutput } from "@trpc/server";
@@ -12,7 +13,7 @@ import {
 } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { type ChangeEvent, useEffect } from "react";
+import { type ChangeEvent, useEffect, PropsWithChildren } from "react";
 import superjson from "superjson";
 import { AddEntryButton } from "~/components/addEntryButton";
 import { type LayoutProps } from "~/components/layout";
@@ -252,7 +253,9 @@ function EntryWithRatings({
     <div className="card card-bordered w-[80vw] border-8 border-base-200 bg-base-200 bg-opacity-30 sm:w-[28rem] md:w-[36rem]">
       {/* TODO: pick correct width and height */}
       <figure className="rounded-t-lg">
-        <Image src={imageUrl} alt={title} width={700} height={700} />
+        <EntryImageDialog imageUrl={imageUrl} title={title}>
+          <Image src={imageUrl} alt={title} width={700} height={700} />
+        </EntryImageDialog>
       </figure>
       <div className="card-body">
         <h2 className="card-title block overflow-hidden text-ellipsis">
@@ -316,7 +319,8 @@ function Ratings({
     );
   };
 
-  const numberRangeTo = (number: number) => [...Array(number).keys()];
+  const numberRangeTo = (number: number) =>
+    [...Array(number).keys()].map((value) => value + 1);
 
   return (
     <div className="card-actions mt-4 flex-col items-stretch justify-around gap-4 md:flex-row">
@@ -436,7 +440,9 @@ function EntryWithoutRatings({
     <div className="card card-bordered w-[80vw] border-8 border-base-200 bg-base-200 bg-opacity-30 sm:w-[28rem] md:w-[36rem]">
       {/* TODO: pick correct width and height */}
       <figure className="rounded-t-lg">
-        <Image src={imageUrl} alt={title} width={700} height={700} />
+        <EntryImageDialog imageUrl={imageUrl} title={title}>
+          <Image src={imageUrl} alt={title} width={700} height={700} />
+        </EntryImageDialog>
       </figure>
       <div className="card-body">
         <h2 className="card-title block overflow-hidden text-ellipsis">
@@ -453,6 +459,40 @@ function EntryWithoutRatings({
         )}
       </div>
     </div>
+  );
+}
+
+interface EntryImageDialogProps extends PropsWithChildren {
+  imageUrl: string;
+  title: string;
+}
+
+function EntryImageDialog({
+  imageUrl,
+  title,
+  children,
+}: EntryImageDialogProps) {
+  // TODO: dont focus after closing
+
+  return (
+    <Dialog.Root>
+      <Dialog.Trigger>{children}</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 [animation:overlayShow_250ms_cubic-bezier(0.16,1,0.3,1)]" />
+        <Dialog.Content
+          onCloseAutoFocus={(e) => e.preventDefault()}
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-black bg-opacity-25 [animation:contentShow_150ms_cubic-bezier(0.16,1,0.3,1)]"
+        >
+          <Image
+            src={imageUrl}
+            alt={title}
+            width={2000}
+            height={2000}
+            className="max-h-[90vh] w-auto max-w-[90vw] rounded-lg"
+          />
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 
