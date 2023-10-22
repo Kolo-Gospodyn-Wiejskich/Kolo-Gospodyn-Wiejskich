@@ -133,6 +133,7 @@ function CompetitionPageFeed() {
 
 function AuthedEntryFeed() {
   const competitionId = useAtomValue(competitionIdAtom);
+  const { data: sessionData } = useSession();
 
   const { data, isLoading, error } =
     api.entry.getAllWithRatingsByCompetitionId.useQuery(
@@ -173,13 +174,17 @@ function AuthedEntryFeed() {
   return (
     <div className="flex flex-col items-center gap-8">
       {isThisCompetitionActive && <AddEntryButton type="page" />}
-      {data.map((authedEntry) => (
-        <AuthedEntry
-          key={authedEntry.id}
-          isActive={isThisCompetitionActive}
-          {...authedEntry}
-        />
-      ))}
+      {data.map((authedEntry) =>
+        authedEntry.authorId === sessionData?.user.id ? (
+          <UnauthedEntry key={authedEntry.id} {...authedEntry} />
+        ) : (
+          <AuthedEntry
+            key={authedEntry.id}
+            isActive={isThisCompetitionActive}
+            {...authedEntry}
+          />
+        ),
+      )}
     </div>
   );
 }
