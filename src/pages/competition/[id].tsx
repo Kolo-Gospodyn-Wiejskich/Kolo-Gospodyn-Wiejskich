@@ -455,7 +455,7 @@ function EntryWithoutRatings({
           </span>
         </span>
         {!!description && (
-          <p className="overflow-hidden text-ellipsis">{description}</p>
+          <p className="block overflow-hidden text-ellipsis">{description}</p>
         )}
       </div>
     </div>
