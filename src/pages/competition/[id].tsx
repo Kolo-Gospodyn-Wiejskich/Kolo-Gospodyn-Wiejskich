@@ -254,7 +254,14 @@ function EntryWithRatings({
       {/* TODO: pick correct width and height */}
       <figure className="rounded-t-lg">
         <EntryImageDialog imageUrl={imageUrl} title={title}>
-          <Image src={imageUrl} alt={title} width={700} height={700} />
+          <Image
+            src={imageUrl}
+            alt={title}
+            width={700}
+            height={700}
+            placeholder="blur"
+            blurDataURL={imageUrl}
+          />
         </EntryImageDialog>
       </figure>
       <div className="card-body">
@@ -443,7 +450,14 @@ function EntryWithoutRatings({
       {/* TODO: pick correct width and height */}
       <figure className="rounded-t-lg">
         <EntryImageDialog imageUrl={imageUrl} title={title}>
-          <Image src={imageUrl} alt={title} width={700} height={700} />
+          <Image
+            src={imageUrl}
+            alt={title}
+            width={700}
+            height={700}
+            placeholder="blur"
+            blurDataURL={imageUrl}
+          />
         </EntryImageDialog>
       </figure>
       <div className="card-body">
@@ -490,6 +504,8 @@ function EntryImageDialog({
             alt={title}
             width={2000}
             height={2000}
+            placeholder="blur"
+            blurDataURL={imageUrl}
             className="max-h-[95vh] w-auto max-w-[95vw]"
           />
         </Dialog.Content>

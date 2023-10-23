@@ -28,7 +28,7 @@ dependencies:
     version: 1.0.2(@types/react@18.2.20)(react@18.2.0)
   '@t3-oss/env-nextjs':
     specifier: ^0.6.0
-    version: 0.6.0(typescript@5.1.6)(zod@3.21.4)
+    version: 0.6.0(typescript@5.1.6)(zod@3.22.4)
   '@tanstack/react-query':
     specifier: ^4.29.25
     version: 4.29.25(react-dom@18.2.0)(react@18.2.0)
@@ -46,7 +46,7 @@ dependencies:
     version: 10.34.0
   '@uploadthing/react':
     specifier: ^5.6.1
-    version: 5.6.1(next@13.4.13)(react@18.2.0)(uploadthing@5.6.1)(zod@3.21.4)
+    version: 5.6.1(next@13.4.13)(react@18.2.0)(uploadthing@5.6.1)(zod@3.22.4)
   bcryptjs:
     specifier: ^2.4.3
     version: 2.4.3
@@ -94,10 +94,10 @@ dependencies:
     version: 1.14.0
   uploadthing:
     specifier: ^5.6.1
-    version: 5.6.1(zod@3.21.4)
+    version: 5.6.1(zod@3.22.4)
   zod:
-    specifier: ^3.21.4
-    version: 3.21.4
+    specifier: ^3.22.4
+    version: 3.22.4
 
 devDependencies:
   '@types/bcryptjs':
@@ -123,7 +123,7 @@ devDependencies:
     version: 6.3.0(eslint@8.47.0)(typescript@5.1.6)
   autoprefixer:
     specifier: ^10.4.14
-    version: 10.4.14(postcss@8.4.27)
+    version: 10.4.14(postcss@8.4.31)
   daisyui:
     specifier: ^3.7.3
     version: 3.7.3
@@ -134,8 +134,8 @@ devDependencies:
     specifier: ^13.4.13
     version: 13.4.13(eslint@8.47.0)(typescript@5.1.6)
   postcss:
-    specifier: ^8.4.27
-    version: 8.4.27
+    specifier: ^8.4.31
+    version: 8.4.31
   prettier:
     specifier: ^3.0.0
     version: 3.0.0
@@ -932,25 +932,25 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@t3-oss/env-core@0.6.0(typescript@5.1.6)(zod@3.21.4):
+  /@t3-oss/env-core@0.6.0(typescript@5.1.6)(zod@3.22.4):
     resolution: {integrity: sha512-3FkPAba069WRZVVab/sB1m3eSGn/rZeypx5k+sWEu1d+k0OQdRDnvFS+7MtxYgqVrwaRk3b7yVnX2dgSPVmWPQ==}
     peerDependencies:
       typescript: '>=4.7.2'
       zod: ^3.0.0
     dependencies:
       typescript: 5.1.6
-      zod: 3.21.4
+      zod: 3.22.4
     dev: false
 
-  /@t3-oss/env-nextjs@0.6.0(typescript@5.1.6)(zod@3.21.4):
+  /@t3-oss/env-nextjs@0.6.0(typescript@5.1.6)(zod@3.22.4):
     resolution: {integrity: sha512-SpzcGNIbUYcQw4zPPFeRJqCC1560zL7QmB0puIqOnuCsmykPkqHPX+n9CNZLXVQerboHzfvb7Kd+jAdouk72Vw==}
     peerDependencies:
       typescript: '>=4.7.2'
       zod: ^3.0.0
     dependencies:
-      '@t3-oss/env-core': 0.6.0(typescript@5.1.6)(zod@3.21.4)
+      '@t3-oss/env-core': 0.6.0(typescript@5.1.6)(zod@3.22.4)
       typescript: 5.1.6
-      zod: 3.21.4
+      zod: 3.22.4
     dev: false
 
   /@tanstack/query-core@4.29.25:
@@ -1209,7 +1209,7 @@ packages:
     resolution: {integrity: sha512-UDySsPbdi7wp52WG7mp5CiZwaTvokDubqhm1xhFm73Bqhp0PsGbwSSF5PdCXH4fe8Y4EKGrMyWQ4i1fF9+DVVQ==}
     dev: false
 
-  /@uploadthing/react@5.6.1(next@13.4.13)(react@18.2.0)(uploadthing@5.6.1)(zod@3.21.4):
+  /@uploadthing/react@5.6.1(next@13.4.13)(react@18.2.0)(uploadthing@5.6.1)(zod@3.22.4):
     resolution: {integrity: sha512-uVd4I26OudpUcikobDFBMl9mG0vlhdXmK57oidCIrvfgNfKZOehpW+pqe1nUWE8HoYquJ1iK4OrmrfX8hOK2MA==}
     peerDependencies:
       next: '*'
@@ -1219,19 +1219,19 @@ packages:
       next:
         optional: true
     dependencies:
-      '@uploadthing/shared': 5.2.2(@uploadthing/mime-types@0.2.1)(zod@3.21.4)
+      '@uploadthing/shared': 5.2.2(@uploadthing/mime-types@0.2.1)(zod@3.22.4)
       attr-accept: 2.2.2
       file-selector: 0.6.0
       next: 13.4.13(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       tailwind-merge: 1.14.0
-      uploadthing: 5.6.1(zod@3.21.4)
+      uploadthing: 5.6.1(zod@3.22.4)
     transitivePeerDependencies:
       - '@uploadthing/mime-types'
       - zod
     dev: false
 
-  /@uploadthing/shared@5.2.2(@uploadthing/mime-types@0.2.1)(zod@3.21.4):
+  /@uploadthing/shared@5.2.2(@uploadthing/mime-types@0.2.1)(zod@3.22.4):
     resolution: {integrity: sha512-OxNXcL91BSyKhZ+j0N5ekFRpCTwWsAf8B1FzL1YePTrNhMA0ZdlYqsObMAr7/jeWTc/mGaRRV1zUL4HBevnE3Q==}
     peerDependencies:
       '@uploadthing/mime-types': ^0.2.0
@@ -1241,7 +1241,7 @@ packages:
         optional: true
     dependencies:
       '@uploadthing/mime-types': 0.2.1
-      zod: 3.21.4
+      zod: 3.22.4
     dev: false
 
   /acorn-jsx@5.3.2(acorn@8.10.0):
@@ -1403,7 +1403,7 @@ packages:
     engines: {node: '>=4'}
     dev: false
 
-  /autoprefixer@10.4.14(postcss@8.4.27):
+  /autoprefixer@10.4.14(postcss@8.4.31):
     resolution: {integrity: sha512-FQzyfOsTlwVzjHxKEqRIAdJx9niO6VCBCoEwax/VLSoQF29ggECcPuBqUMZ+u8jCZOPSy8b8/8KnuFbp0SaFZQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
@@ -1415,7 +1415,7 @@ packages:
       fraction.js: 4.3.6
       normalize-range: 0.1.2
       picocolors: 1.0.0
-      postcss: 8.4.27
+      postcss: 8.4.31
       postcss-value-parser: 4.2.0
     dev: true
 
@@ -1605,8 +1605,8 @@ packages:
     dependencies:
       colord: 2.9.3
       css-selector-tokenizer: 0.8.0
-      postcss: 8.4.27
-      postcss-js: 4.0.1(postcss@8.4.27)
+      postcss: 8.4.31
+      postcss-js: 4.0.1(postcss@8.4.31)
       tailwindcss: 3.3.3
     transitivePeerDependencies:
       - ts-node
@@ -3022,29 +3022,29 @@ packages:
     engines: {node: '>= 6'}
     dev: true
 
-  /postcss-import@15.1.0(postcss@8.4.27):
+  /postcss-import@15.1.0(postcss@8.4.31):
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       postcss: ^8.0.0
     dependencies:
-      postcss: 8.4.27
+      postcss: 8.4.31
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.4
     dev: true
 
-  /postcss-js@4.0.1(postcss@8.4.27):
+  /postcss-js@4.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
       postcss: ^8.4.21
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.4.27
+      postcss: 8.4.31
     dev: true
 
-  /postcss-load-config@4.0.1(postcss@8.4.27):
+  /postcss-load-config@4.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -3057,17 +3057,17 @@ packages:
         optional: true
     dependencies:
       lilconfig: 2.1.0
-      postcss: 8.4.27
+      postcss: 8.4.31
       yaml: 2.3.2
     dev: true
 
-  /postcss-nested@6.0.1(postcss@8.4.27):
+  /postcss-nested@6.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.2.14
     dependencies:
-      postcss: 8.4.27
+      postcss: 8.4.31
       postcss-selector-parser: 6.0.13
     dev: true
 
@@ -3092,8 +3092,8 @@ packages:
       source-map-js: 1.0.2
     dev: false
 
-  /postcss@8.4.27:
-    resolution: {integrity: sha512-gY/ACJtJPSmUFPDCHtX78+01fHa64FaU4zaaWfuh1MhGJISufJAH4cun6k/8fwsHYeK4UQmENQK+tRLCFJE8JQ==}
+  /postcss@8.4.31:
+    resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.6
@@ -3604,11 +3604,11 @@ packages:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.0.0
-      postcss: 8.4.27
-      postcss-import: 15.1.0(postcss@8.4.27)
-      postcss-js: 4.0.1(postcss@8.4.27)
-      postcss-load-config: 4.0.1(postcss@8.4.27)
-      postcss-nested: 6.0.1(postcss@8.4.27)
+      postcss: 8.4.31
+      postcss-import: 15.1.0(postcss@8.4.31)
+      postcss-js: 4.0.1(postcss@8.4.31)
+      postcss-load-config: 4.0.1(postcss@8.4.31)
+      postcss-nested: 6.0.1(postcss@8.4.31)
       postcss-selector-parser: 6.0.13
       resolve: 1.22.4
       sucrase: 3.34.0
@@ -3746,11 +3746,11 @@ packages:
       picocolors: 1.0.0
     dev: true
 
-  /uploadthing@5.6.1(zod@3.21.4):
+  /uploadthing@5.6.1(zod@3.22.4):
     resolution: {integrity: sha512-lWVMCoAmZ33mahV6NS7oW+eQl++jnYEuaR3zh9PlrEt6P8lkl3GPDUE5iWywBx+pK9HewIqZvaZXQvzKOjOlMg==}
     dependencies:
       '@uploadthing/mime-types': 0.2.1
-      '@uploadthing/shared': 5.2.2(@uploadthing/mime-types@0.2.1)(zod@3.21.4)
+      '@uploadthing/shared': 5.2.2(@uploadthing/mime-types@0.2.1)(zod@3.22.4)
     transitivePeerDependencies:
       - zod
     dev: false
@@ -3892,4 +3892,8 @@ packages:
 
   /zod@3.21.4:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+    dev: false
+
+  /zod@3.22.4:
+    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false

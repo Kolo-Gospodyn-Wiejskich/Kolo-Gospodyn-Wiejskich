@@ -148,6 +148,8 @@ function Competition({
           alt={`Zdjęcie przedstawiające ${name}`}
           width={300}
           height={300}
+          placeholder="blur"
+          blurDataURL={imageUrl}
           className="absolute inset-0 z-30 h-full w-full rounded-xl object-cover object-center opacity-50"
         />
         <div className="z-50 overflow-hidden text-ellipsis p-4 text-center text-white">
