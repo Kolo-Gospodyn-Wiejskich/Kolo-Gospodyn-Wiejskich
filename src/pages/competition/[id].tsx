@@ -267,7 +267,9 @@ function EntryWithRatings({
             {author.firstName} {author.lastName}
           </span>
         </span>
-        <p>{description}</p>
+        {!!description && (
+          <p className="block overflow-hidden text-ellipsis">{description}</p>
+        )}
         <Ratings
           ratings={ratings}
           competitionId={competitionId}
@@ -478,17 +480,17 @@ function EntryImageDialog({
     <Dialog.Root>
       <Dialog.Trigger>{children}</Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 [animation:overlayShow_250ms_cubic-bezier(0.16,1,0.3,1)]" />
+        <Dialog.Overlay className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 [animation:overlayShow_600ms_cubic-bezier(0.16,1,0.3,1)]" />
         <Dialog.Content
           onCloseAutoFocus={(e) => e.preventDefault()}
-          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-black bg-opacity-25 [animation:contentShow_150ms_cubic-bezier(0.16,1,0.3,1)]"
+          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-25 [animation:contentShow_400ms_cubic-bezier(0.16,1,0.3,1)]"
         >
           <Image
             src={imageUrl}
             alt={title}
             width={2000}
             height={2000}
-            className="max-h-[90vh] w-auto max-w-[90vw] rounded-lg"
+            className="max-h-[95vh] w-auto max-w-[95vw]"
           />
         </Dialog.Content>
       </Dialog.Portal>
