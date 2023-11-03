@@ -114,12 +114,12 @@ const toRankingArray = (
   ratings: RatingsForRanking[],
   entryAuthors: EntryAuthorsForRanking,
 ) => {
-  const resultMap = new Map<string, number>();
-
-  for (const author of entryAuthors) {
-    const fullName = `${author.firstName} ${author.lastName}`;
-    resultMap.set(fullName, 0);
-  }
+  const resultMap = new Map<string, number>(
+    entryAuthors.map(({ firstName, lastName }) => {
+      const fullName = `${firstName} ${lastName}`;
+      return [fullName, 0];
+    }),
+  );
 
   for (const rating of ratings) {
     const fullName = `${rating.entry.author.firstName} ${rating.entry.author.lastName}`;
