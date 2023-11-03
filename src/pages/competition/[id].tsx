@@ -126,16 +126,49 @@ export default function CompetitionPage({
 function CompetitionPageFeed() {
   const { status: sessionStatus } = useSession();
 
-  if (sessionStatus === "loading")
+  const competitionId = useAtomValue(competitionIdAtom);
+  const { data } = api.rating.getRankingByCompetitionId.useQuery(
+    { id: competitionId! },
+    { enabled: !!competitionId },
+  );
+
+  if (sessionStatus === "loading" || !data)
     return (
       <span className="loading loading-dots loading-lg mt-6 text-accent" />
     );
 
   return (
     <>
+      <CompetitionRanking rankingsArray={data} />
       {sessionStatus === "authenticated" && <AuthedEntryFeed />}
       {sessionStatus === "unauthenticated" && <UnauthedEntryFeed />}
     </>
+  );
+}
+
+interface CompetitionRankingProps {
+  rankingsArray: inferProcedureOutput<
+    AppRouter["rating"]["getRankingByCompetitionId"]
+  >;
+}
+
+function CompetitionRanking({ rankingsArray }: CompetitionRankingProps) {
+  if (rankingsArray.length === 0) return null;
+
+  return (
+    <div className="space-y-4">
+      <div className="text-center text-4xl font-bold text-secondary">
+        Ranking
+      </div>
+      <ol className="space-y-1">
+        {rankingsArray.map((spot) => (
+          <li key={spot.name} className="flex justify-between gap-10 text-xl">
+            <div>{spot.name}</div>
+            <div className="font-semibold">{spot.value} pkt</div>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 
