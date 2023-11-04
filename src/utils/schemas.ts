@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  MAX_POINTS_APPEARANCE,
+  MAX_POINTS_NUTRITION,
+  MAX_POINTS_TASTE,
+} from "./constants";
 
 export const loginSchema = z.object({
   firstName: z.string().min(1, "Imię nie może być puste"),
@@ -45,10 +50,6 @@ export const entrySchema = z.object({
     .optional(),
   imageUrl: z.string().url(),
 });
-
-export const MAX_POINTS_TASTE = 5;
-export const MAX_POINTS_APPEARANCE = 4;
-export const MAX_POINTS_NUTRITION = 3;
 
 export const ratingSchema = z
   .object({

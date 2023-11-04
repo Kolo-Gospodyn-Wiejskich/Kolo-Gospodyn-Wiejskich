@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createServerSideHelpers } from "@trpc/react-query/server";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ChangeEvent, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
@@ -61,6 +62,10 @@ export default function AddEntryPage() {
         utils.entry.getAllWithoutRatingsByCompetitionId.invalidate({
           id: competitionId,
         }),
+        utils.rating.getRankingByCompetitionId.invalidate({
+          id: competitionId,
+        }),
+        utils.rating.getGlobalRanking.invalidate(),
       ]);
       await router.push(`/competition/${competitionId}`);
     },
@@ -147,9 +152,16 @@ export default function AddEntryPage() {
     <div className="w-[80vw] space-y-4 sm:w-96">
       <h1 className="text-4xl font-bold dark:text-primary-content">
         Dodaj wypiek{" "}
-        <span className="text-secondary">
+        <Link
+          href={
+            activeCompetition?.competition?.id
+              ? `/competition/${activeCompetition.competition.id}`
+              : "/"
+          }
+          className="link-hover link-secondary link overflow-hidden text-ellipsis font-semibold"
+        >
           {activeCompetition?.competition?.name ?? "wypiek"}
-        </span>
+        </Link>
       </h1>
       <p>
         Podaj nazwę twojego <span className="text-secondary">wypieku</span>,

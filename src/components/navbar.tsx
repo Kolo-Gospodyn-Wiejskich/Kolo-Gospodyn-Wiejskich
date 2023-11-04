@@ -5,6 +5,7 @@ import {
   EnterIcon,
   PersonIcon,
   PlusIcon,
+  StarIcon,
 } from "@radix-ui/react-icons";
 import { AddEntryButton } from "./addEntryButton";
 
@@ -32,6 +33,7 @@ export function Navbar() {
               <PlusIcon />
               Dodaj konkurencję
             </Link>
+            <Ranking />
             <button className="btn btn-ghost" onClick={() => void signOut()}>
               <ExitIcon />
               Wyloguj
@@ -40,6 +42,7 @@ export function Navbar() {
         )}
         {sessionStatus === "unauthenticated" && (
           <>
+            <Ranking />
             <Link href={"/auth/signup"} role="button" className="btn btn-ghost">
               <PersonIcon />
               Rejestracja
@@ -52,5 +55,14 @@ export function Navbar() {
         )}
       </div>
     </nav>
+  );
+}
+
+function Ranking() {
+  return (
+    <Link href={"/ranking"} role="button" className="btn btn-ghost">
+      <StarIcon />
+      Ranking
+    </Link>
   );
 }

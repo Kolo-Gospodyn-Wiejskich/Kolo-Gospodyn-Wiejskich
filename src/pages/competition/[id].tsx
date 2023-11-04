@@ -25,7 +25,7 @@ import {
   MAX_POINTS_APPEARANCE,
   MAX_POINTS_NUTRITION,
   MAX_POINTS_TASTE,
-} from "~/utils/schemas";
+} from "~/utils/constants";
 import { cn } from "~/utils/tailwind-merge";
 
 const competitionIdAtom = atom<string | null>(null);
@@ -392,6 +392,7 @@ function Ratings({
         utils.rating.getRankingByCompetitionId.invalidate({
           id: competitionId,
         }),
+        utils.rating.getGlobalRanking.invalidate(),
       ]);
     },
   });
