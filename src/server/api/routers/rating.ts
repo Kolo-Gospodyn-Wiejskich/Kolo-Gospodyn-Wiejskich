@@ -72,38 +72,6 @@ export const ratingRouter = createTRPCRouter({
   addNew: protectedProcedure
     .input(ratingSchema)
     .mutation(async ({ input, ctx }) => {
-      const existingRating = await ctx.prisma.rating.findFirst({
-        where: {
-          entryId: input.entryId,
-          type: input.type,
-          authorId: ctx.session.user.id,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (existingRating) {
-        await ctx.prisma.rating.update({
-          where: {
-            id: existingRating.id,
-          },
-          data: {
-            ...input,
-            authorId: ctx.session.user.id,
-          },
-        });
-      } else {
-        await ctx.prisma.rating.create({
-          data: {
-            ...input,
-            authorId: ctx.session.user.id,
-          },
-        });
-      }
-
-      // TODO: optimize
-
       const existingRatings = await ctx.prisma.rating.findMany({
         where: {
           entryId: input.entryId,
@@ -116,46 +84,41 @@ export const ratingRouter = createTRPCRouter({
         },
       });
 
-      const tasteRating = existingRatings.find(({ type }) => type === "TASTE");
-      const appearanceRating = existingRatings.find(
-        ({ type }) => type === "APPEARANCE",
-      );
-      const nutritionRating = existingRatings.find(
-        ({ type }) => type === "NUTRITION",
+      const sameTypeRating = existingRatings.find(
+        ({ type }) => type === input.type,
       );
 
-      if (!tasteRating) {
-        await ctx.prisma.rating.create({
+      if (sameTypeRating) {
+        await ctx.prisma.rating.update({
+          where: {
+            id: sameTypeRating.id,
+          },
           data: {
-            type: "TASTE",
-            value: 1,
-            entryId: input.entryId,
+            ...input,
             authorId: ctx.session.user.id,
           },
         });
+
+        return { status: "ok" } as const;
       }
 
-      if (!appearanceRating) {
-        await ctx.prisma.rating.create({
-          data: {
-            type: "APPEARANCE",
-            value: 1,
-            entryId: input.entryId,
-            authorId: ctx.session.user.id,
-          },
-        });
-      }
+      const ratingTypesToCreate = (
+        ["TASTE", "APPEARANCE", "NUTRITION"] as const
+      ).filter((typeToCreate) => {
+        const rating = existingRatings.find(
+          ({ type }) => type === typeToCreate,
+        );
+        return !rating;
+      });
 
-      if (!nutritionRating) {
-        await ctx.prisma.rating.create({
-          data: {
-            type: "NUTRITION",
-            value: 1,
-            entryId: input.entryId,
-            authorId: ctx.session.user.id,
-          },
-        });
-      }
+      await ctx.prisma.rating.createMany({
+        data: ratingTypesToCreate.map((typeToCreate) => ({
+          type: typeToCreate,
+          value: input.type === typeToCreate ? input.value : 1,
+          entryId: input.entryId,
+          authorId: ctx.session.user.id,
+        })),
+      });
 
       return { status: "ok" } as const;
     }),
