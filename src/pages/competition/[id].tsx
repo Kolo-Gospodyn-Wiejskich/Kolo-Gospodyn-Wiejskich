@@ -156,19 +156,32 @@ interface CompetitionRankingProps {
 function CompetitionRanking({ rankingsArray }: CompetitionRankingProps) {
   if (rankingsArray.length === 0) return null;
 
+  // TODO: HANDLE OVERFLOW Y
   return (
-    <div className="space-y-4">
-      <div className="text-center text-4xl font-bold text-secondary">
-        Ranking
+    <div className="w-[80vw] max-w-xl">
+      <div className="space-y-4">
+        <h1 className="text-center text-4xl font-bold text-primary">Ranking</h1>
+        <table className="table">
+          <thead className="text-base">
+            <tr>
+              <th>Uczestnik</th>
+              <th>Punkty</th>
+              <th>Punkty globalne</th>
+            </tr>
+          </thead>
+          <tbody className="text-lg">
+            {rankingsArray.map(({ name, value, globalPointsEearned }) => (
+              <tr key={name}>
+                <td>{name}</td>
+                <td>{value}</td>
+                <td className="font-semibold">
+                  {globalPointsEearned > 0 && `+ ${globalPointsEearned}`}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <ol className="space-y-1">
-        {rankingsArray.map((spot) => (
-          <li key={spot.name} className="flex justify-between gap-10 text-xl">
-            <div>{spot.name}</div>
-            <div className="font-semibold">{spot.value} pkt</div>
-          </li>
-        ))}
-      </ol>
     </div>
   );
 }
@@ -366,7 +379,6 @@ function Ratings({
           ratings: newRatings,
         };
       });
-      console.log({ newRatings });
 
       utils.entry.getAllWithRatingsByCompetitionId.setData(
         { id: competitionId },

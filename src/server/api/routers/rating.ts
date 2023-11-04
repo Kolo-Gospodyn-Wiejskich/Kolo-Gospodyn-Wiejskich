@@ -6,12 +6,8 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import {
-  FIRST_PLACE_POINTS,
-  SECOND_PLACE_POINTS,
-  THIRD_PLACE_POINTS,
-} from "~/utils/constants";
 import { ratingSchema } from "~/utils/schemas";
+import { toPlacementPoints } from "~/utils/placements";
 
 export const ratingRouter = createTRPCRouter({
   getGlobalRanking: publicProcedure.query(async ({ ctx }) => {
@@ -179,22 +175,23 @@ const toRankingArray = (
     );
   }
 
-  return Array.from(resultMap, ([name, value]) => ({ name, value })).sort(
-    (a, b) => b.value - a.value,
-  );
-};
+  const rankingArray = Array.from(resultMap, ([name, value]) => ({
+    name,
+    value,
+  })).sort((a, b) => b.value - a.value);
 
-// {
-//   entries: {
-//       ratings: {
-//           value: number;
-//       }[];
-//       author: {
-//           firstName: string;
-//           lastName: string;
-//       };
-//   }[];
-// }[]
+  const placementPoints = toPlacementPoints(rankingArray);
+
+  return rankingArray.map(({ name, value }) => {
+    const userPoints = placementPoints.find((p) => p.fullNames.includes(name));
+
+    return {
+      name,
+      value,
+      globalPointsEearned: userPoints?.points ?? 0,
+    };
+  });
+};
 
 type CompetitionsForGlobalRanking = {
   entries: {
@@ -247,7 +244,8 @@ const toGlobalRanking = (competitions: CompetitionsForGlobalRanking) => {
       value,
     })).sort((a, b) => b.value - a.value);
 
-    const placementPoints = getPlacementPoints(competitionArray);
+    const placementPoints = toPlacementPoints(competitionArray);
+
     for (const { points, fullNames } of placementPoints) {
       for (const fullName of fullNames) {
         const curentPoints = resultMap.get(fullName);
@@ -259,49 +257,4 @@ const toGlobalRanking = (competitions: CompetitionsForGlobalRanking) => {
   return Array.from(resultMap, ([name, value]) => ({ name, value })).sort(
     (a, b) => b.value - a.value,
   );
-};
-
-type UserPointsType = {
-  name: string;
-  value: number;
-};
-
-const getPlacementPoints = (userPointsArray: UserPointsType[]) => {
-  const placesMap = new Map<number, UserPointsType[]>();
-
-  let currentPlaceIndex = 0;
-
-  for (const userPoints of userPointsArray) {
-    const currentPlace = placesMap.get(currentPlaceIndex);
-
-    if (!currentPlace?.[0]) {
-      placesMap.set(currentPlaceIndex, [userPoints]);
-      continue;
-    }
-
-    if (userPoints.value === currentPlace[0].value) {
-      currentPlace.push(userPoints);
-      continue;
-    }
-
-    placesMap.set(++currentPlaceIndex, [userPoints]);
-  }
-
-  const placesToReceivePoints = [
-    FIRST_PLACE_POINTS,
-    SECOND_PLACE_POINTS,
-    THIRD_PLACE_POINTS,
-  ];
-
-  const pointsArray = Array.from(placesMap, ([place, userPointsArray]) => ({
-    place,
-    fullNames: userPointsArray.map(({ name }) => name),
-  }))
-    .filter(({ place }) => place < placesToReceivePoints.length)
-    .map(({ place, fullNames }) => ({
-      points: placesToReceivePoints[place]!,
-      fullNames,
-    }));
-
-  return pointsArray;
 };

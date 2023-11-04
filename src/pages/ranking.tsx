@@ -1,5 +1,7 @@
 import { type LayoutProps } from "~/components/layout";
 import { api } from "~/utils/api";
+import { toPlacements } from "~/utils/placements";
+import { cn } from "~/utils/tailwind-merge";
 
 export function getStaticProps() {
   return {
@@ -15,7 +17,7 @@ export function getStaticProps() {
 export default function RankingPage() {
   return (
     <div className="container flex h-full flex-col items-center justify-center gap-6">
-      <div className="w-[80vw] sm:w-96">
+      <div className="w-[80vw] max-w-3xl">
         <GlobalRanking />
       </div>
     </div>
@@ -37,23 +39,46 @@ function GlobalRanking() {
       </div>
     );
 
+  const placements = toPlacements(data);
+  const getPlaceByFullName = (fullName: string) =>
+    placements.find((placement) => placement.fullNames.includes(fullName))!
+      .placeIndex;
+
   // TODO: HANDLE OVERFLOW Y
   return (
     <div className="mt-6 space-y-6">
       <h1 className="text-5xl font-bold text-primary">Ranking</h1>
-      <table className="table table-pin-cols static h-44">
-        <thead>
+      <table className="table">
+        <thead className="text-lg">
           <tr>
             <th>Miejsce</th>
             <th>Uczestnik</th>
             <th>Punkty</th>
           </tr>
         </thead>
-        <tbody>
-          {data.map(({ name, value }, index) => (
-            <tr key={name}>
-              <td>{index + 1}</td>
-              <td>{name}</td>
+        <tbody className="text-xl">
+          {data.map(({ name, value }) => (
+            <tr
+              key={name}
+              className={cn({
+                "font-semibold": getPlaceByFullName(name) < 3,
+                "bg-amber-400 bg-opacity-10": getPlaceByFullName(name) === 0,
+                "bg-slate-400 bg-opacity-10": getPlaceByFullName(name) === 1,
+                "bg-amber-700 bg-opacity-10": getPlaceByFullName(name) === 2,
+              })}
+            >
+              <td>{getPlaceByFullName(name) + 1}</td>
+              <td
+                className={cn({
+                  "underline decoration-4 underline-offset-2":
+                    getPlaceByFullName(name) < 3,
+                  "decoration-amber-400": getPlaceByFullName(name) === 0,
+                  "decoration-slate-400": getPlaceByFullName(name) === 1,
+                  "decoration-amber-700": getPlaceByFullName(name) === 2,
+                })}
+              >
+                {name}
+              </td>
               <td>{value}</td>
             </tr>
           ))}
