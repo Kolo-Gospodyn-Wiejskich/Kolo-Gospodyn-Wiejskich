@@ -14,6 +14,7 @@ import {
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { type ChangeEvent, useEffect, type PropsWithChildren } from "react";
+import toast from "react-hot-toast";
 import superjson from "superjson";
 import { AddEntryButton } from "~/components/addEntryButton";
 import { type LayoutProps } from "~/components/layout";
@@ -330,10 +331,68 @@ function Ratings({
   const utils = api.useContext();
 
   const { mutate: addRating } = api.rating.addNew.useMutation({
-    onSuccess: async () => {
-      await utils.entry.getAllWithRatingsByCompetitionId.invalidate({
+    onMutate: async (rating) => {
+      await utils.entry.getAllWithRatingsByCompetitionId.cancel({
         id: competitionId,
       });
+
+      const previousEntries =
+        utils.entry.getAllWithRatingsByCompetitionId.getData({
+          id: competitionId,
+        });
+
+      if (!previousEntries) return;
+
+      const previousEntry = previousEntries.find(
+        (entry) => entry.id === entryId,
+      );
+      if (!previousEntry) return;
+
+      const newRatings = (["TASTE", "APPEARANCE", "NUTRITION"] as const).map(
+        (type) => {
+          if (type === rating.type) return rating;
+          const previousRating = previousEntry.ratings.find(
+            (r) => r.type === type,
+          );
+          if (previousRating) return previousRating;
+          return { type, value: 1 };
+        },
+      );
+
+      const newEntries = previousEntries.map((entry) => {
+        if (entry.id !== entryId) return entry;
+        return {
+          ...entry,
+          ratings: newRatings,
+        };
+      });
+      console.log({ newRatings });
+
+      utils.entry.getAllWithRatingsByCompetitionId.setData(
+        { id: competitionId },
+        newEntries,
+      );
+
+      return { previousEntries };
+    },
+    onError: (_, __, context) => {
+      toast.error("Błąd serwera, spróbuj ponownie");
+
+      if (!context?.previousEntries) return;
+      utils.entry.getAllWithRatingsByCompetitionId.setData(
+        { id: competitionId },
+        context?.previousEntries,
+      );
+    },
+    onSettled: () => {
+      void Promise.allSettled([
+        utils.entry.getAllWithRatingsByCompetitionId.invalidate({
+          id: competitionId,
+        }),
+        utils.rating.getRankingByCompetitionId.invalidate({
+          id: competitionId,
+        }),
+      ]);
     },
   });
 
@@ -385,7 +444,8 @@ function Ratings({
               type="radio"
               name={`${entryId}-TASTE`}
               value={value}
-              defaultChecked={shouldBeChecked("TASTE", value)}
+              checked={shouldBeChecked("TASTE", value)}
+              readOnly
               className={cn("mask mask-star bg-secondary brightness-50", {
                 "cursor-not-allowed": !isCompetitionActive,
               })}
@@ -419,7 +479,8 @@ function Ratings({
               type="radio"
               name={`${entryId}-APPEARANCE`}
               value={value}
-              defaultChecked={shouldBeChecked("APPEARANCE", value)}
+              checked={shouldBeChecked("APPEARANCE", value)}
+              readOnly
               className={cn("mask mask-star bg-accent brightness-50", {
                 "cursor-not-allowed": !isCompetitionActive,
               })}
@@ -453,7 +514,8 @@ function Ratings({
               type="radio"
               name={`${entryId}-NUTRITION`}
               value={value}
-              defaultChecked={shouldBeChecked("NUTRITION", value)}
+              checked={shouldBeChecked("NUTRITION", value)}
+              readOnly
               className={cn("mask mask-star bg-primary brightness-50", {
                 "cursor-not-allowed": !isCompetitionActive,
               })}
@@ -507,8 +569,6 @@ function EntryImageDialog({
   title,
   children,
 }: EntryImageDialogProps) {
-  // TODO: dont focus after closing
-
   return (
     <Dialog.Root>
       <Dialog.Trigger>{children}</Dialog.Trigger>

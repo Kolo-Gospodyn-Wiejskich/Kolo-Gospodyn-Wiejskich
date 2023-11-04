@@ -26,56 +26,48 @@ export const ratingRouter = createTRPCRouter({
 
       if (competition.startsAt > new Date()) return [];
 
-      // TODO: fix
-      if (true) {
-        //(competition.endsAt > new Date()) {
-
-        const [ratings, entryAuthors] = await Promise.allSettled([
-          ctx.prisma.rating.findMany({
-            where: {
-              entry: {
-                competitionId: input.id,
-              },
-            },
-            select: {
-              entry: {
-                select: {
-                  author: { select: { firstName: true, lastName: true } },
-                },
-              },
-              value: true,
-            },
-          }),
-          ctx.prisma.entry.findMany({
-            where: {
+      const [ratings, entryAuthors] = await Promise.allSettled([
+        ctx.prisma.rating.findMany({
+          where: {
+            entry: {
               competitionId: input.id,
             },
-            select: {
-              author: {
-                select: {
-                  firstName: true,
-                  lastName: true,
-                },
+          },
+          select: {
+            entry: {
+              select: {
+                author: { select: { firstName: true, lastName: true } },
               },
             },
-          }),
-        ]);
+            value: true,
+          },
+        }),
+        ctx.prisma.entry.findMany({
+          where: {
+            competitionId: input.id,
+          },
+          select: {
+            author: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        }),
+      ]);
 
-        if (ratings.status === "rejected" || entryAuthors.status === "rejected")
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Databaase error",
-          });
+      if (ratings.status === "rejected" || entryAuthors.status === "rejected")
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Databaase error",
+        });
 
-        const flattenedEntryAuthors = entryAuthors.value.map(({ author }) => ({
-          ...author,
-        }));
+      const flattenedEntryAuthors = entryAuthors.value.map(({ author }) => ({
+        ...author,
+      }));
 
-        return toRankingArray(ratings.value, flattenedEntryAuthors);
-      }
-
-      // FIXME: handle past competitions
-      return [];
+      return toRankingArray(ratings.value, flattenedEntryAuthors);
     }),
   addNew: protectedProcedure
     .input(ratingSchema)
@@ -105,6 +97,61 @@ export const ratingRouter = createTRPCRouter({
         await ctx.prisma.rating.create({
           data: {
             ...input,
+            authorId: ctx.session.user.id,
+          },
+        });
+      }
+
+      // TODO: optimize
+
+      const existingRatings = await ctx.prisma.rating.findMany({
+        where: {
+          entryId: input.entryId,
+          authorId: ctx.session.user.id,
+        },
+        select: {
+          id: true,
+          type: true,
+          value: true,
+        },
+      });
+
+      const tasteRating = existingRatings.find(({ type }) => type === "TASTE");
+      const appearanceRating = existingRatings.find(
+        ({ type }) => type === "APPEARANCE",
+      );
+      const nutritionRating = existingRatings.find(
+        ({ type }) => type === "NUTRITION",
+      );
+
+      if (!tasteRating) {
+        await ctx.prisma.rating.create({
+          data: {
+            type: "TASTE",
+            value: 1,
+            entryId: input.entryId,
+            authorId: ctx.session.user.id,
+          },
+        });
+      }
+
+      if (!appearanceRating) {
+        await ctx.prisma.rating.create({
+          data: {
+            type: "APPEARANCE",
+            value: 1,
+            entryId: input.entryId,
+            authorId: ctx.session.user.id,
+          },
+        });
+      }
+
+      if (!nutritionRating) {
+        await ctx.prisma.rating.create({
+          data: {
+            type: "NUTRITION",
+            value: 1,
+            entryId: input.entryId,
             authorId: ctx.session.user.id,
           },
         });

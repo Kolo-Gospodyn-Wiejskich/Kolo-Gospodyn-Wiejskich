@@ -54,8 +54,7 @@ export default function AddEntryPage() {
 
   const { mutate: addNewEntry } = api.entry.addNew.useMutation({
     onSuccess: async ({ competitionId }) => {
-      await router.push(`/competition/${competitionId}`);
-      await Promise.allSettled([
+      void Promise.allSettled([
         utils.entry.getAllWithRatingsByCompetitionId.invalidate({
           id: competitionId,
         }),
@@ -63,6 +62,7 @@ export default function AddEntryPage() {
           id: competitionId,
         }),
       ]);
+      await router.push(`/competition/${competitionId}`);
     },
     onError: () => {
       toast.error("Błąd serwera, spróbuj ponownie");

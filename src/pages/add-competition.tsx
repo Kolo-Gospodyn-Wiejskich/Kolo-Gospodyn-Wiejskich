@@ -53,11 +53,11 @@ export default function AddCompetitionPage() {
 
   const { mutate: addCompetition } = api.competition.addNew.useMutation({
     onSuccess: async ({ id }) => {
-      await router.push(`/competition/${id}`);
-      await Promise.allSettled([
+      void Promise.allSettled([
         utils.competition.getAll.invalidate(),
         utils.competition.getAllTakenDateRanges.invalidate(),
       ]);
+      await router.push(`/competition/${id}`);
     },
     onError: (error) => {
       if (
