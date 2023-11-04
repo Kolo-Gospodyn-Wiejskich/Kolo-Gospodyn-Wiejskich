@@ -29,24 +29,24 @@ export const ratingRouter = createTRPCRouter({
       // TODO: fix
       if (true) {
         //(competition.endsAt > new Date()) {
-        const ratings = await ctx.prisma.rating.findMany({
-          where: {
-            entry: {
-              competitionId: input.id,
-            },
-          },
-          select: {
-            entry: {
-              select: {
-                author: { select: { firstName: true, lastName: true } },
+
+        const [ratings, entryAuthors] = await Promise.allSettled([
+          ctx.prisma.rating.findMany({
+            where: {
+              entry: {
+                competitionId: input.id,
               },
             },
-            value: true,
-          },
-        });
-
-        const entryAuthors = (
-          await ctx.prisma.entry.findMany({
+            select: {
+              entry: {
+                select: {
+                  author: { select: { firstName: true, lastName: true } },
+                },
+              },
+              value: true,
+            },
+          }),
+          ctx.prisma.entry.findMany({
             where: {
               competitionId: input.id,
             },
@@ -58,10 +58,20 @@ export const ratingRouter = createTRPCRouter({
                 },
               },
             },
-          })
-        ).map(({ author }) => ({ ...author }));
+          }),
+        ]);
 
-        return toRankingArray(ratings, entryAuthors);
+        if (ratings.status === "rejected" || entryAuthors.status === "rejected")
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Databaase error",
+          });
+
+        const flattenedEntryAuthors = entryAuthors.value.map(({ author }) => ({
+          ...author,
+        }));
+
+        return toRankingArray(ratings.value, flattenedEntryAuthors);
       }
 
       // FIXME: handle past competitions
