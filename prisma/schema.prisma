@@ -34,8 +34,8 @@ model Entry {
 
     ratings Rating[]
 
-    author     User       @relation(fields: [authorId], references: [id])
-    competiton Competiton @relation(fields: [competitionId], references: [id])
+    author     User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    competiton Competiton @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 
     @@unique([authorId, competitionId])
 }
@@ -53,8 +53,8 @@ model Rating {
     type     RatingType
     value    Int
 
-    entry  Entry @relation(fields: [entryId], references: [id])
-    author User  @relation(fields: [authorId], references: [id])
+    entry  Entry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+    author User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
     @@unique([authorId, entryId, type])
 }
