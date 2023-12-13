@@ -10,6 +10,14 @@
   html {
     font-family: "Rubik", sans-serif;
     /* font-family: "Karla", sans-serif; */
+    @apply scroll-smooth;
+    font-size: 80%;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      font-size: 100%;
+    }
   }
 }
 

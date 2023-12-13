@@ -38,11 +38,11 @@ export default function Layout({
       </Head>
       <main
         data-theme={theme}
-        className="flex min-h-screen flex-col gap-6 p-6 supports-[height:100dvh]:min-h-[100dvh]"
+        className="flex min-h-screen flex-col gap-6 supports-[height:100dvh]:min-h-[100dvh]"
       >
         <Navbar />
         <div
-          className={cn("flex flex-1 justify-center px-6", {
+          className={cn("flex flex-1 justify-center p-6", {
             "items-center": centeredVertically,
           })}
         >
